@@ -1,5 +1,5 @@
 dev:
-	docker compose up --watch
+	docker compose up --watch --build
 
 test:
 	uv run coverage run -m pytest
@@ -12,10 +12,10 @@ helm-deps:
 	cd helm/sample-app && helm dependency update
 
 helm-install:
-	cd helm/sample-app && helm install my-sample-app . --namespace sample-app --create-namespace
+	cd helm/sample-app && helm install sample-app . --namespace sample-app --create-namespace
 
 helm-upgrade:
-	cd helm/sample-app && helm upgrade my-sample-app . --namespace sample-app
+	cd helm/sample-app && helm upgrade sample-app . --namespace sample-app
 
 helm-uninstall:
-	cd helm/sample-app && helm uninstall my-sample-app --namespace sample-app
+	cd helm/sample-app && helm uninstall sample-app --namespace sample-app
