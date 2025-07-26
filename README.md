@@ -7,7 +7,7 @@ This project demonstrates a modern, production-ready FastAPI application with:
 - OpenAPI docs endpoints with Swagger UI and ReDoc
 - PostgreSQL database
 - Containerized for local development
-- Cloud-agnostic deployment (Docker, Helm)
+- [Twelve-Factor App](https://12factor.net/) principles
 - Automated tests and code quality tools
 
 ## Prerequisites
