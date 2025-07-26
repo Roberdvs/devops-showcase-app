@@ -2,13 +2,18 @@
 
 ## Project Overview
 
-This project demonstrates a modern, production-ready FastAPI application with:
+This project demonstrates a modern, production-ready backend application using the following technologies:
 
-- OpenAPI docs endpoints with Swagger UI and ReDoc
-- PostgreSQL database
-- Containerized for local development
-- [Twelve-Factor App](https://12factor.net/) principles
-- Automated tests and code quality tools
+- **[FastAPI](https://fastapi.tiangolo.com/)**: Modern, fast web framework for building APIs
+- **PostgreSQL**: Relational database backend
+- **SQLModel**: SQL databases in Python, designed for intuitiveness and compatibility
+- **[Twelve-Factor App](https://12factor.net/)** principles for building modern, scalable applications
+- **Tracing**: Automatic tracing instrumentation using [OpenTelemetry](https://opentelemetry.io/docs/languages/python/) libraries
+- **Prometheus Metrics**: Application metrics exposed on `/metrics` endpoint
+- **Docker**: Containerized application and database
+- **Helm**: Helm charts to package and deploy Kubernetes manifests
+- **GitHub Actions**: CI/CD pipelines
+- **Comprehensive Testing**: Unit testing with coverage reporting in Pull Requests
 
 ## Prerequisites
 
@@ -30,16 +35,19 @@ Makefile       # Common dev/test/build commands
 ## Local Development
 
 1. Clone the repo
-2. Run: `make dev` (starts app and db with Docker Compose, hot reload enabled)
-3. API docs: [http://localhost:8000/docs](http://localhost:8000/docs) and [http://localhost:8000/redoc](http://localhost:8000/redoc)
+2. Run `make dev` to start the app and DB with Docker Compose with hot reload enabled for faster development
+3. Access the application:
+   - **API Documentation**: [http://localhost:8000/docs](http://localhost:8000/docs) or [http://localhost:8000/redoc](http://localhost:8000/redoc)
+   - **Health Check**: [http://localhost:8000/health](http://localhost:8000/health)
+   - **Metrics**: [http://localhost:8000/metrics](http://localhost:8000/metrics)
 
 ### Running Unit Tests
 
-Run `make test` (uses `uv` and `coverage`)
+Run `make test`. Uses `uv`, `coverage` and `pytest` to run the tests and generate a coverage report.
 
-## Common Makefile Commands
+### Common Makefile Commands
 
-- `make dev`           – Start app and db locally (hot reload)
+- `make dev`           – Start app and db locally with hot reload
 - `make test`          – Run tests with coverage
 - `make build`         – Build Docker image
 - `make helm-install`  – Install Helm chart to local cluster
@@ -62,6 +70,34 @@ The project contains a Helm chart for deploying the application manifests to a K
    ```
 
 Adjust the `helm/sample-app/values.yaml` accordingly with the different configuration options (ingress, DB, env, etc).
+
+## Observability
+
+### Tracing
+
+The application uses OpenTelemetry for distributed tracing with the FastAPI routes being automatically instrumented.
+
+```sh
+# Enable/disable tracing
+OTEL_TRACES_EXPORTER=otlp / none
+OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://localhost:4317
+OTEL_SERVICE_NAME=sample-app
+```
+
+### **Prometheus Metrics**
+
+The application uses [prometheus-fastapi-instrumentator](https://github.com/trallnag/prometheus-fastapi-instrumentator) for exposing metrics on the `/metrics` endpoint.
+
+```sh
+# Enable/disable metrics
+ENABLE_METRICS=true / false
+```
+
+### **Health Monitoring**
+
+- **Health Endpoint**: `GET /health` for application health checks
+- **Readiness Probes**: Kubernetes-ready health check responses
+- **Graceful Shutdown**: Proper application lifecycle management
 
 ## System Architecture Diagram
 
@@ -133,20 +169,18 @@ The following architecture components can be used for a production-ready deploym
 ### **Monitoring & Observability**
 
 - **Logging**: Application stdout logs can be collected by a monitoring agent and centralized
-- **Metrics**: Application metrics exposed on metrics endpoint can be scraped by a monitoring agent
+- **Metrics**: Prometheus-compatible metrics exposed at `/metrics` endpoint ready to be scraped
+- **Distributed Tracing**: OpenTelemetry traces exported via OTLP
 - **Health Checks**: Application and infrastructure health monitoring
 
 ### **Deployment Tools**
 
-- **Terraform**: Infrastructure as Code for cloud resources
 - **Helm**: Package manager for K8s applications' deployments
 - **GitHub Actions**: Automations for CI/CD
 
 ## DevOps Flow
 
-1. **Code Changes** → GitHub Actions triggers build
-2. **Docker Build** → Image pushed to Container Registry
-3. **Terraform** → Provisions cloud infrastructure
-4. **Helm Deployment** → Deploys application to Kubernetes cluster
-5. **Load Balancer** → Routes traffic to healthy pods
-6. **Monitoring** → Monitoring system collects logs and metrics
+1. **Code Changes**: GitHub Actions triggers tests and build
+2. **Docker Build**: Image pushed to Container Registry
+3. **Deployment**: Deploys application to Kubernetes cluster using Helm
+4. **Observability**: Prometheus-compatible metrics. Logs collected by a monitoring agent. Traces can be sent to a monitoring backend like [Jaeger](https://www.jaegertracing.io/) or [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/).
