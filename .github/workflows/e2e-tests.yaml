@@ -1,19 +1,17 @@
 name: End-to-End Tests
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["Build and Push Image"]
+    types:
+      - completed
 
 permissions:
   contents: read
 
 jobs:
   e2e-test:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     name: Deploy to Minikube
     runs-on: ubuntu-latest
     steps:
@@ -31,19 +29,21 @@ jobs:
           helm repo add bitnami https://charts.bitnami.com/bitnami
           helm repo update
 
-      - name: Build Docker image
+      - name: Pull CI image
         run: |
-          make build
+          # Pull the image that was built in the CI workflow
+          docker pull ghcr.io/${{ github.repository }}:${{ github.sha }}
 
       - name: Deploy to minikube
         run: |
           make helm-deps
-          make helm-install
+          # Install with the PR-specific image tag
+          make helm-install IMAGE_TAG=${{ github.sha }}
 
       - name: Wait for pods to be ready
         run: |
           echo "Waiting for application pod to be ready..."
-          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sample-app -n sample-app --timeout=300s
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=application -n sample-app --timeout=300s
 
           echo "Application is ready"
 
@@ -98,8 +98,9 @@ jobs:
 
             ### What was tested:
             - ✅ Minikube cluster deployment
-            - ✅ Helm chart installation
+            - ✅ Helm chart installation with CI image
             - ✅ Application deployment
+            - ✅ Database connectivity
             - ✅ Health endpoint
             - ✅ API documentation
             - ✅ Metrics endpoint
