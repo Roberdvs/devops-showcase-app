@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Path, status, Depends
+from contextlib import asynccontextmanager
 from fastapi.responses import RedirectResponse
 from typing import Annotated
 from app import schemas, crud, database
@@ -7,12 +8,16 @@ from datetime import date
 
 SessionDep = Annotated[Session, Depends(database.get_session)]
 
-app = FastAPI()
 
-
-@app.on_event("startup")
-def on_startup():
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    # Startup logic
     database.create_db_and_tables()
+    yield
+    # (Optional) Shutdown logic here
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/")
@@ -61,10 +66,3 @@ def get_hello(
 )
 def get_health():
     return schemas.HealthCheck(status="OK")
-
-
-@app.get("/testdb", response_model=schemas.Message)
-def get_hello(
-    session: SessionDep,
-):
-    return {"message": "db connection"}
