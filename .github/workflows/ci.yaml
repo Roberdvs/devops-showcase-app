@@ -12,6 +12,7 @@ on:
 permissions:
   contents: read
   id-token: write
+  packages: write
 
 jobs:
   ci:
@@ -50,6 +51,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           # Don't push on PRs
