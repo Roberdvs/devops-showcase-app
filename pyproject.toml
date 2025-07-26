@@ -12,11 +12,12 @@ dependencies = [
     "opentelemetry-sdk==1.35.0",
     "opentelemetry-instrumentation-fastapi==0.56b0",
     "opentelemetry-exporter-otlp==1.35.0",
-    "prometheus-fastapi-instrumentator>=7.1.0",
+    "prometheus-fastapi-instrumentator>=7.1.0"
 ]
 
 [dependency-groups]
 dev = [
     "coverage>=7.10.0",
     "pytest>=8.4.1",
+    "testcontainers>=4.12.0",
 ]
