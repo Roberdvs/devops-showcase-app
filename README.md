@@ -48,10 +48,13 @@ Run `make test` (uses `uv` and `coverage`)
 
 1. Build and push your Docker image to a registry (update `values.yaml` with the image repo/tag)
 2. Update Helm dependencies:
+
    ```sh
    make helm-deps
    ```
+
 3. Install to your cluster:
+
    ```sh
    make helm-install
    ```
