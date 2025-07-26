@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   e2e-test:
@@ -32,19 +33,19 @@ jobs:
       - name: Pull CI image
         run: |
           # Pull the image that was built in the CI workflow
-          docker pull ghcr.io/${{ github.repository }}:${{ github.sha }}
+          docker pull ghcr.io/${{ github.repository }}:${{ github.event.workflow_run.head_sha }}
+          echo "Successfully pulled CI image: ghcr.io/${{ github.repository }}:${{ github.event.workflow_run.head_sha }}"
 
       - name: Deploy to minikube
         run: |
           make helm-deps
           # Install with the PR-specific image tag
-          make helm-install IMAGE_TAG=${{ github.sha }}
+          make helm-install IMAGE_TAG=${{ github.event.workflow_run.head_sha }}
 
       - name: Wait for pods to be ready
         run: |
           echo "Waiting for application pod to be ready..."
           kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=application -n sample-app --timeout=300s
-
           echo "Application is ready"
 
       - name: Test application endpoints
@@ -88,29 +89,47 @@ jobs:
           echo "Cleanup completed!"
 
       - name: Comment PR with test results
-        if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
-            const comment = `## 🧪 End-to-End Test Results
+            const branchName = "${{ github.event.workflow_run.head_branch }}";
 
-            **Status**: ✅ All tests passed!
-
-            ### What was tested:
-            - ✅ Minikube cluster deployment
-            - ✅ Helm chart installation with CI image
-            - ✅ Application deployment
-            - ✅ Database connectivity
-            - ✅ Health endpoint
-            - ✅ API documentation
-            - ✅ Metrics endpoint
-            - ✅ API endpoints
-
-            The application was successfully deployed and all endpoints are working correctly 🚀`;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
+            // Find PRs associated with this branch
+            const { data: pulls } = await github.rest.pulls.list({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: comment
+              head: `${context.repo.owner}:${branchName}`,
+              state: 'open'
             });
+
+            if (pulls.length > 0) {
+              const comment = `## 🧪 End-to-End Test Results
+
+              **Status**: ✅ All tests passed!
+
+              ### What was tested:
+              - ✅ Minikube cluster deployment
+              - ✅ Helm chart installation with CI image
+              - ✅ Application deployment
+              - ✅ Health endpoint
+              - ✅ API documentation
+              - ✅ Metrics endpoint
+              - ✅ API endpoints
+
+              ### Test Environment:
+              - **Kubernetes**: Minikube (ephemeral)
+              - **Database**: PostgreSQL (via Bitnami chart)
+              - **Application**: FastAPI with OpenTelemetry
+              - **Image**: Reused from CI workflow (\`${{ github.event.workflow_run.head_sha }}\`)
+
+              The application was successfully deployed and all endpoints are working correctly! 🚀`;
+
+              github.rest.issues.createComment({
+                issue_number: pulls[0].number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            } else {
+              console.log('No open PR found for this branch, skipping comment');
+            }
