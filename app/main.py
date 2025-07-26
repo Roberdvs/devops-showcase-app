@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Path, status, Depends
+from fastapi.responses import RedirectResponse
 from typing import Annotated
 from app import schemas, crud, database
 from sqlmodel import Session
@@ -8,9 +9,16 @@ SessionDep = Annotated[Session, Depends(database.get_session)]
 
 app = FastAPI()
 
+
 @app.on_event("startup")
 def on_startup():
     database.create_db_and_tables()
+
+
+@app.get("/")
+def root():
+    return RedirectResponse(url="/docs")
+
 
 @app.put("/hello/{username}")
 def put_hello(
@@ -22,6 +30,7 @@ def put_hello(
         raise HTTPException(status_code=400, detail="dateOfBirth must be before today")
     crud.create_or_update_user(session, username, payload.dateOfBirth)
     return username
+
 
 @app.get("/hello/{username}", response_model=schemas.Message)
 def get_hello(
@@ -42,6 +51,7 @@ def get_hello(
         msg = f"Hello, {username}! Your birthday is in {days} day(s)"
     return {"message": msg}
 
+
 @app.get(
     "/health",
     summary="Perform a Health Check",
@@ -51,6 +61,7 @@ def get_hello(
 )
 def get_health():
     return schemas.HealthCheck(status="OK")
+
 
 @app.get("/testdb", response_model=schemas.Message)
 def get_hello(
