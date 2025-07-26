@@ -6,14 +6,17 @@ This project demonstrates a modern, production-ready backend application using t
 
 - **[FastAPI](https://fastapi.tiangolo.com/)**: Modern, fast web framework for building APIs
 - **PostgreSQL**: Relational database backend
-- **SQLModel**: SQL databases in Python, designed for intuitiveness and compatibility
+- **[SQLModel](https://sqlmodel.tiangolo.com/)**: Simplifies SQL database operations. Combines [SQLAlchemy](https://www.sqlalchemy.org/) and [Pydantic](https://docs.pydantic.dev)
 - **[Twelve-Factor App](https://12factor.net/)** principles for building modern, scalable applications
 - **Tracing**: Automatic tracing instrumentation using [OpenTelemetry](https://opentelemetry.io/docs/languages/python/) libraries
 - **Prometheus Metrics**: Application metrics exposed on `/metrics` endpoint
 - **Docker**: Containerized application and database, supporting multi-platform builds
 - **Helm**: Helm charts to package and deploy Kubernetes manifests
 - **GitHub Actions**: CI/CD pipelines
-- **Comprehensive Testing**: Unit testing with coverage reporting and integration testing with Testcontainers
+- **Comprehensive Testing**:
+  - Unit testing with coverage reporting
+  - Integration testing with Testcontainers
+  - End-to-end testing with an ephemeral Kubernetes cluster in GitHub Actions
 
 ## Prerequisites
 
