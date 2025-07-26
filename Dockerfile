@@ -31,3 +31,6 @@ EXPOSE 8000
 # Run the FastAPI application
 # Uses `--reload` to enable hot-reloading when the `docker compose watch` file sync occurs
 CMD ["fastapi", "run", "--reload", "app/main.py"]
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD curl --fail http://localhost:8000/health || exit 1
