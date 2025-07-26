@@ -1,0 +1,114 @@
+name: End-to-End Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  e2e-test:
+    name: Deploy to Minikube
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start minikube
+        id: minikube
+        uses: medyagh/setup-minikube@v0.0.20
+
+      - name: Verify cluster
+        run: |
+          kubectl get pods -A
+          kubectl get nodes
+          echo "Minikube cluster is ready!"
+
+      - uses: azure/setup-helm@v4.3.0
+
+      - name: Add Helm repositories
+        run: |
+          helm repo add stakater https://stakater.github.io/stakater-charts
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm repo update
+
+      - name: Build Docker image
+        run: |
+          make build
+
+      - name: Deploy to minikube
+        run: |
+          make helm-deps
+          make helm-install
+
+      - name: Test application endpoints
+        run: |
+          # Get the service URL
+          SERVICE_URL=$(minikube service application --url -n sample-app)
+          echo "Testing application at: $SERVICE_URL"
+
+          # Wait a bit for the application to be fully ready
+          sleep 30
+
+          # Test health endpoint
+          echo "Testing health endpoint..."
+          curl -f "$SERVICE_URL/health" || exit 1
+
+          # Test API documentation
+          echo "Testing API docs..."
+          curl -f "$SERVICE_URL/docs" || exit 1
+
+          # Test metrics endpoint
+          echo "Testing metrics endpoint..."
+          curl -f "$SERVICE_URL/metrics" || exit 1
+
+          # Test hello endpoint (create user)
+          echo "Testing hello endpoint (create user)..."
+          curl -f -X PUT "$SERVICE_URL/hello/testuser" \
+            -H "Content-Type: application/json" \
+            -d '{"dateOfBirth": "1990-01-15"}' || exit 1
+
+          # Test hello endpoint (get user)
+          echo "Testing hello endpoint (get user)..."
+          curl -f "$SERVICE_URL/hello/testuser" || exit 1
+
+          echo "All tests passed! 🎉"
+
+      - name: Cleanup
+        if: always()
+        run: |
+          echo "Cleaning up minikube deployment..."
+          make helm-uninstall || true
+          echo "Cleanup completed!"
+
+      - name: Comment PR with test results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = `## 🧪 End-to-End Test Results
+
+            **Status**: ✅ All tests passed!
+
+            ### What was tested:
+            - ✅ Minikube cluster deployment
+            - ✅ Helm chart installation
+            - ✅ Application deployment
+            - ✅ Health endpoint
+            - ✅ API documentation
+            - ✅ Metrics endpoint
+            - ✅ API endpoints
+
+            The application was successfully deployed and all endpoints are working correctly 🚀`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
