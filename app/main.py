@@ -2,22 +2,38 @@ from fastapi import FastAPI, HTTPException, Path, Depends
 from contextlib import asynccontextmanager
 from fastapi.responses import RedirectResponse
 from typing import Annotated
-from app import schemas, crud, database
+from app import schemas, crud, database, telemetry
 from sqlmodel import Session
 from datetime import date
+from prometheus_fastapi_instrumentator import Instrumentator
 
-SessionDep = Annotated[Session, Depends(database.get_session)]
+# Initialize OpenTelemetry tracer
+tracer = telemetry.setup_opentelemetry()
 
 
+# FastAPI lifespan to initialize the database and tables on startup
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     # Startup logic
     database.create_db_and_tables()
     yield
-    # (Optional) Shutdown logic here
 
 
+# Initialize FastAPI app
 app = FastAPI(lifespan=lifespan)
+
+# Instrument FastAPI with OpenTelemetry tracing
+telemetry.instrument_fastapi(app)
+
+# Instrument FastAPI with Prometheus metrics
+Instrumentator().instrument(app).expose(app, include_in_schema=False, should_gzip=True)
+
+# Dependency to get a database session
+SessionDep = Annotated[Session, Depends(database.get_session)]
+
+###############
+# API Endpoints
+###############
 
 
 @app.get("/")
