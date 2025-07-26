@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Path, status, Depends
+from fastapi import FastAPI, HTTPException, Path, Depends
 from contextlib import asynccontextmanager
 from fastapi.responses import RedirectResponse
 from typing import Annotated
@@ -22,26 +22,41 @@ app = FastAPI(lifespan=lifespan)
 
 @app.get("/")
 def root():
+    """Redirect to the API documentation."""
     return RedirectResponse(url="/docs")
 
 
-@app.put("/hello/{username}")
+@app.put(
+    "/hello/{username}",
+    summary="Add User's birthday",
+)
 def put_hello(
     session: SessionDep,
     username: str = Path(..., pattern="^[A-Za-z]+$"),
     payload: schemas.UserCreate = ...,
 ):
+    """Create or update a user's date of birth.
+    - username: must contain only letters
+    - dateOfBirth: must be before today
+    Returns the username on success.
+    """
     if payload.dateOfBirth >= date.today():
         raise HTTPException(status_code=400, detail="dateOfBirth must be before today")
     crud.create_or_update_user(session, username, payload.dateOfBirth)
     return username
 
 
-@app.get("/hello/{username}", response_model=schemas.Message)
+@app.get(
+    "/hello/{username}", summary="Get User's birthday", response_model=schemas.Message
+)
 def get_hello(
     session: SessionDep,
     username: str = Path(..., pattern="^[A-Za-z]+$"),
 ):
+    """Return a birthday message for the given user.
+    - If today is the user's birthday: 'Happy birthday!'
+    - Otherwise: 'Your birthday is in N day(s)'
+    """
     user = crud.get_user(session, username)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -61,8 +76,8 @@ def get_hello(
     "/health",
     summary="Perform a Health Check",
     response_description="Return HTTP Status Code 200 (OK)",
-    status_code=status.HTTP_200_OK,
     response_model=schemas.HealthCheck,
 )
 def get_health():
+    """Health check endpoint. Returns status OK as JSON."""
     return schemas.HealthCheck(status="OK")
