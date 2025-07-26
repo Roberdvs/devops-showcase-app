@@ -27,8 +27,7 @@ def root():
 
 
 @app.put(
-    "/hello/{username}",
-    summary="Add User's birthday",
+    "/hello/{username}", summary="Add User's birthday", response_model=schemas.Message
 )
 def put_hello(
     session: SessionDep,
@@ -38,12 +37,12 @@ def put_hello(
     """Create or update a user's date of birth.
     - username: must contain only letters
     - dateOfBirth: must be before today
-    Returns the username on success.
     """
     if payload.dateOfBirth >= date.today():
         raise HTTPException(status_code=400, detail="dateOfBirth must be before today")
     crud.create_or_update_user(session, username, payload.dateOfBirth)
-    return username
+    msg = "Date of Birth added sucessfully"
+    return {"message": msg}
 
 
 @app.get(
