@@ -10,7 +10,7 @@ This project demonstrates a modern, production-ready backend application using t
 - **[Twelve-Factor App](https://12factor.net/)** principles for building modern, scalable applications
 - **Tracing**: Automatic tracing instrumentation using [OpenTelemetry](https://opentelemetry.io/docs/languages/python/) libraries
 - **Prometheus Metrics**: Application metrics exposed on `/metrics` endpoint
-- **Docker**: Containerized application and database
+- **Docker**: Containerized application and database, supporting multi-platform builds
 - **Helm**: Helm charts to package and deploy Kubernetes manifests
 - **GitHub Actions**: CI/CD pipelines
 - **Comprehensive Testing**: Unit testing with coverage reporting in Pull Requests

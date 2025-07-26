@@ -1,4 +1,4 @@
-name: CI
+name: Build and Push Image
 
 on:
   workflow_dispatch:
@@ -15,7 +15,7 @@ permissions:
   packages: write
 
 jobs:
-  ci:
+  build-and-push:
     name: Container image
     runs-on: ubuntu-latest
     steps:
@@ -55,5 +55,4 @@ jobs:
           cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          # Don't push on PRs
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
