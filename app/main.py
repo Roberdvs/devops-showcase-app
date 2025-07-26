@@ -1,7 +1,10 @@
 from fastapi import FastAPI, HTTPException, Path, status, Depends
+from typing import Annotated
 from app import schemas, crud, database
 from sqlmodel import Session
 from datetime import date
+
+SessionDep = Annotated[Session, Depends(database.get_session)]
 
 app = FastAPI()
 
@@ -9,21 +12,21 @@ app = FastAPI()
 def on_startup():
     database.create_db_and_tables()
 
-@app.put("/hello/{username}", status_code=status.HTTP_204_NO_CONTENT)
+@app.put("/hello/{username}")
 def put_hello(
+    session: SessionDep,
     username: str = Path(..., pattern="^[A-Za-z]+$"),
     payload: schemas.UserCreate = ...,
-    session: Session = Depends(database.get_session),
 ):
     if payload.dateOfBirth >= date.today():
         raise HTTPException(status_code=400, detail="dateOfBirth must be before today")
     crud.create_or_update_user(session, username, payload.dateOfBirth)
-    return
+    return username
 
 @app.get("/hello/{username}", response_model=schemas.Message)
 def get_hello(
+    session: SessionDep,
     username: str = Path(..., pattern="^[A-Za-z]+$"),
-    session: Session = Depends(database.get_session),
 ):
     user = crud.get_user(session, username)
     if not user:
@@ -51,6 +54,6 @@ def get_health():
 
 @app.get("/testdb", response_model=schemas.Message)
 def get_hello(
-    session: Session = Depends(database.get_session),
+    session: SessionDep,
 ):
     return {"message": "db connection"}
