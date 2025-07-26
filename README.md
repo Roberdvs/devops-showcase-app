@@ -18,7 +18,7 @@ This project demonstrates a modern, production-ready backend application using t
 ## Prerequisites
 
 - [Docker](https://www.docker.com/get-started)
-- [Python 3.13+](https://www.python.org/downloads/) (for running tests/linters locally)
+- [Python 3.13+](https://www.python.org/downloads/)
 - [uv](https://github.com/astral-sh/uv) (for Python dependency management)
 - [Helm](https://helm.sh/) (for Kubernetes deployment)
 
