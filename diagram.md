@@ -6,8 +6,6 @@ The diagram is written using [Mermaid](https://mermaid.js.org/) which can be [re
 
 ```mermaid
 graph TB
-
-graph TB
     User[👤 End Users] --> Internet[🌐 Internet]
 
     subgraph Cloud["Cloud Platform"]
@@ -31,7 +29,7 @@ graph TB
         end
 
         subgraph Database["Database"]
-            DB[🗄️ PostgreSQL<br/>RDS or In-Cluster]
+            DB[PostgreSQL<br/>RDS or In-Cluster]
         end
 
         subgraph Registry["Container Registry"]
