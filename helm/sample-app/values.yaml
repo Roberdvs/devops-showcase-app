@@ -38,6 +38,7 @@ application:
             pathType: Prefix
 
 postgresql:
+  # Disable PostgreSQL in-cluster deployment if using an external database like AWS RDS
   enabled: true
   auth:
     username: postgres
