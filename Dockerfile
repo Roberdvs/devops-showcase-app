@@ -28,6 +28,10 @@ ENV PATH="/app/.venv/bin:$PATH"
 WORKDIR /app
 EXPOSE 8000
 
+# Create non-root user
+RUN adduser --disabled-password --uid 1000 appuser
+USER 1000
+
 # Run the FastAPI application
 # Uses `--reload` to enable hot-reloading when the `docker compose watch` file sync occurs
 CMD ["fastapi", "run", "--reload", "app/main.py"]
