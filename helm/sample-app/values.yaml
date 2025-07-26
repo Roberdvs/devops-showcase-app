@@ -23,6 +23,7 @@ application:
         port: 8000
 
   service:
+    type: NodePort
     ports:
     - port: 8000
       name: http
