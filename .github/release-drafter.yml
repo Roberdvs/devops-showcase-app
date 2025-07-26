@@ -1,0 +1,66 @@
+name-template: 'v$RESOLVED_VERSION 🚀'
+tag-template: '$RESOLVED_VERSION'
+
+categories:
+  - title: '🔥 Breaking Changes'
+    labels:
+      - 'breaking-change'
+  - title: '🎉 New'
+    labels:
+      - 'feature'
+      - 'enhancement'
+  - title: '🐛 Fixes'
+    labels:
+      - 'bug'
+  - title: '📦 Dependency Updates'
+    labels:
+      - 'dependencies'
+  - title: '🔧 Maintenance'
+    labels:
+      - 'chore'
+      - 'internal'
+      - 'maintenance'
+  - title: 'Other Changes'
+    labels: []
+version-resolver:
+  major:
+    labels:
+      - 'breaking-change'
+  minor:
+    labels:
+      - 'feature'
+      - 'enhancement'
+  patch:
+    labels:
+      - 'bug'
+      - 'dependencies'
+      - 'chore'
+      - 'internal'
+      - 'maintenance'
+  default: 'patch'
+
+autolabeler:
+  - label: 'breaking-change'
+    branch:
+      - '/breaking\/.+/'
+    title:
+      - '(?i)^breaking.*'
+  - label: 'feature'
+    branch:
+      - '/feat\/.+/'
+    title:
+      - '(?i)^feat.*'
+  - label: 'bug'
+    branch:
+      - '/fix\/.+/'
+    title:
+      - '(?i)^fix.*'
+  - label: 'dependencies'
+    branch:
+      - '/dependabot\/.+/'
+      - '/renovate\/.+/'
+  - label: 'chore'
+    branch:
+      - '/chore\/.+/'
+
+template: "$CHANGES"
