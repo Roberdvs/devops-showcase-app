@@ -3,6 +3,11 @@ services:
     build: .
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/example
+      # Enable Prometheus metrics
+      - ENABLE_METRICS=true
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_SERVICE_NAME=sample-app
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
     ports:
       - 8000:8000
     # `docker compose up --watch` settings for hot reloading during development
