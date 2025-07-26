@@ -30,11 +30,16 @@ jobs:
           helm repo add bitnami https://charts.bitnami.com/bitnami
           helm repo update
 
+      - id: lower-repo
+        name: Repository to lowercase
+        run: |
+          echo "repository=${GITHUB_REPOSITORY@L}" >> $GITHUB_OUTPUT
+
       - name: Pull CI image
         run: |
           # Pull the image that was built in the CI workflow
-          docker pull ghcr.io/${{ github.repository }}:${{ github.event.workflow_run.head_sha }}
-          echo "Successfully pulled CI image: ghcr.io/${{ github.repository }}:${{ github.event.workflow_run.head_sha }}"
+          docker pull ghcr.io/${{ steps.lower-repo.outputs.repository }}:${{ github.event.workflow_run.head_sha }}
+          echo "Successfully pulled CI image: ghcr.io/${{ steps.lower-repo.outputs.repository }}:${{ github.event.workflow_run.head_sha }}"
 
       - name: Deploy to minikube
         run: |
