@@ -13,7 +13,7 @@ This project demonstrates a modern, production-ready backend application using t
 - **Docker**: Containerized application and database, supporting multi-platform builds
 - **Helm**: Helm charts to package and deploy Kubernetes manifests
 - **GitHub Actions**: CI/CD pipelines
-- **Comprehensive Testing**: Unit testing with coverage reporting in Pull Requests
+- **Comprehensive Testing**: Unit testing with coverage reporting and integration testing with Testcontainers
 
 ## Prerequisites
 
@@ -25,11 +25,14 @@ This project demonstrates a modern, production-ready backend application using t
 ## Project Structure
 
 ```sh
-app/           # Application code (FastAPI, models, db, tests)
-helm/          # Helm chart for Kubernetes deployment
-Dockerfile     # Container build
-compose.yaml   # Docker Compose for local dev
-Makefile       # Common dev/test/build commands
+app/                    # Application code (FastAPI, models, db)
+├── tests/             # Test suite
+│   ├── unit/         # Unit tests (isolated component testing)
+│   └── integration/  # Integration tests (full stack testing)
+helm/                   # Helm chart for Kubernetes deployment
+Dockerfile              # Container build
+compose.yaml            # Docker Compose for local dev
+Makefile                # Common dev/test/build commands
 ```
 
 ## Local Development
@@ -43,7 +46,19 @@ Makefile       # Common dev/test/build commands
 
 ### Running Unit Tests
 
-Run `make test`. Uses `uv`, `coverage` and `pytest` to run the tests and generate a coverage report.
+Run `make test`. Uses `uv`, `coverage` and `pytest` to run the unit tests and generate a coverage report.
+
+Unit tests are located in `app/tests/unit/` and test individual components in isolation.
+
+### Running Integration Tests
+
+The project makes use of [Testcontainers](https://testcontainers.com/) to spin up a containerized PostgreSQL for testing.
+
+#### **Local Testing**
+
+Run `make integration-tests` to execute the integration tests locally.
+
+Integration tests are located in `app/tests/integration/` and test the complete application stack.
 
 ### Common Makefile Commands
 

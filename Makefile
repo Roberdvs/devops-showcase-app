@@ -2,8 +2,11 @@ dev:
 	docker compose up --watch --build
 
 test:
-	uv run coverage run -m pytest
+	uv run coverage run -m pytest app/tests/unit/
 	uv run coverage report
+
+integration-tests:
+	PYTHONPATH=. uv run pytest app/tests/integration/ -v
 
 build:
 	docker build -t sample-app:local .
