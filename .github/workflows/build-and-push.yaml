@@ -1,4 +1,4 @@
-name: CI
+name: Build and Push Image
 
 on:
   workflow_dispatch:
@@ -15,7 +15,7 @@ permissions:
   packages: write
 
 jobs:
-  ci:
+  build-and-push:
     name: Container image
     runs-on: ubuntu-latest
     steps:
