@@ -6,10 +6,10 @@ The diagram is written using [Mermaid](https://mermaid.js.org/) which can be [re
 
 ```mermaid
 graph TB
-    User[👤 End Users] --> Internet[🌐 Internet]
+    User[👤 End Users] --> ALB
 
     subgraph Cloud["Cloud Platform"]
-        Internet --> ALB[Load Balancer<br/>HTTPS & Routing]
+        ALB[Load Balancer<br/>HTTPS & Routing]
 
         subgraph K8s["Kubernetes Cluster"]
             subgraph Namespace["sample-app Namespace"]
@@ -17,14 +17,8 @@ graph TB
                     Pod1[📦 App Pod 1]
                     Pod2[📦 App Pod 2]
                 end
-
-               AppSvc[🔗 App Service<br/>Port 8000]
-
                 Ingress[Ingress Controller]
-
-                Pod1 --> AppSvc
-                Pod2 --> AppSvc
-                AppSvc --> Ingress
+                Service[K8s Service]
             end
         end
 
@@ -38,49 +32,50 @@ graph TB
     end
 
     ALB --> Ingress
-    Ingress --> AppSvc
-
+    Ingress --> Service
+    Service --> Pod1
+    Service --> Pod2
     Pod1 --> DB
     Pod2 --> DB
 
     K8s -.->|Pull Image| Registry
-
 ```
 
-## Architecture Components
+## AWS Architecture Components
 
-The following architecture components can be used for a production-ready deployment of the application:
+The following architecture components can be used for a production-ready deployment of the application on AWS:
 
 ### **Compute & Orchestration**
 
 - **Amazon EKS**: Managed Kubernetes cluster for container orchestration
-- **FastAPI Pods**: Multiple replicas for high availability and load distribution
-- **Helm Charts**: Package and deploy the application using stakater/application chart
-- **Container Registry**: Store and manage Docker images (ECR, GCR, ACR, GHCR)
+- **Application Pods**: Multiple replicas on separate Availability Zones for high availability
+- **Helm Charts**: Package and deploy the necessary K8s manifest
+- **Container Registry**: Host the application image (ECR, GitHub Container Registry, etc.)
 
 ### **Networking**
 
 - **VPC**: Isolated network with public/private subnets across multiple AZs
-- **Route 53**: DNS management and domain routing
-- **Application Load Balancer**: HTTPS termination, SSL/TLS, and traffic distribution
+- **Route 53**: DNS management with records pointing to the Application Load Balancer
+- **Application Load Balancer**: HTTPS termination with SSL certificate and routing to the application pods
 - **Ingress Controller**: NGINX-based ingress for Kubernetes service routing
 
 ### **Database**
 
 - **Amazon RDS**: Managed database service for PostgreSQL deployment
+  - Database credentials can be stored in AWS Secrets Manager and passed to the application using [external-secrets](https://external-secrets.io/)
 - **In-Cluster PostgreSQL**: Cheaper alternative for development/testing environments
 
 ### **Monitoring & Observability**
 
-- **Logging**: Centralized application logs
-- **Metrics**: Performance monitoring and alerting
+- **Logging**: Application stdout logs can be collected by a monitoring agent and centralized
+- **Metrics**: Application metrics exposed on metrics endpoint can be scraped by a monitoring agent
 - **Health Checks**: Application and infrastructure health monitoring
 
 ### **Deployment Tools**
 
 - **Terraform**: Infrastructure as Code for cloud resources
-- **Helm**: Kubernetes package manager for application deployment
-- **GitHub Actions**: CI/CD pipeline for automated deployments
+- **Helm**: Package manager for K8s applications' deployments
+- **GitHub Actions**: Automations for CI/CD
 
 ## DevOps Flow
 
