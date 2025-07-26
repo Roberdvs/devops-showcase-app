@@ -1,0 +1,45 @@
+application:
+  deployment:
+    image:
+      repository: ghcr.io/roberdvs/sample-app
+      tag: main
+    env:
+      DATABASE_URL:
+        value: postgresql://postgres:postgres@sample-app-postgresql:5432/example
+    ports:
+      - containerPort: 8000
+        name: http
+        protocol: TCP
+
+    livenessProbe:
+      enabled: true
+      httpGet:
+        path: /health
+        port: 8000
+    readinessProbe:
+      enabled: true
+      httpGet:
+        path: /health
+        port: 8000
+
+  service:
+    ports:
+    - port: 8000
+      name: http
+      protocol: TCP
+      targetPort: 8000
+
+  ingress:
+    enabled: true
+    hosts:
+      - host: sample-app.local
+        paths:
+          - path: /
+            pathType: Prefix
+
+postgresql:
+  enabled: true
+  auth:
+    username: postgres
+    password: postgres
+    database: example
