@@ -23,12 +23,6 @@ jobs:
         id: minikube
         uses: medyagh/setup-minikube@v0.0.20
 
-      - name: Verify cluster
-        run: |
-          kubectl get pods -A
-          kubectl get nodes
-          echo "Minikube cluster is ready!"
-
       - uses: azure/setup-helm@v4.3.0
 
       - name: Add Helm repositories
@@ -46,9 +40,16 @@ jobs:
           make helm-deps
           make helm-install
 
+      - name: Wait for pods to be ready
+        run: |
+          echo "Waiting for application pod to be ready..."
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=sample-app -n sample-app --timeout=300s
+
+          echo "Application is ready"
+
       - name: Test application endpoints
         run: |
-          # Get the service URL
+          # Get the service URL. The service name is "application" because of the stakater/application chart.
           SERVICE_URL=$(minikube service application --url -n sample-app)
           echo "Testing application at: $SERVICE_URL"
 
