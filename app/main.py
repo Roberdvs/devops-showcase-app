@@ -4,6 +4,7 @@ from fastapi.responses import RedirectResponse
 from typing import Annotated
 from app import schemas, crud, database, telemetry
 from sqlmodel import Session
+from sqlalchemy import text
 from datetime import date
 from prometheus_fastapi_instrumentator import Instrumentator
 
@@ -17,7 +18,6 @@ async def lifespan(_app: FastAPI):
     # Startup logic
     database.create_db_and_tables()
     yield
-
 
 # Initialize FastAPI app
 app = FastAPI(lifespan=lifespan)
@@ -88,11 +88,31 @@ def get_hello(
 
 
 @app.get(
-    "/health",
-    summary="Perform a Health Check",
-    response_description="Return HTTP Status Code 200 (OK)",
+    "/health/live",
+    summary="Liveness Health Check",
+    response_description="Returns 200 (OK) if application is running",
     response_model=schemas.HealthCheck,
 )
-def get_health():
-    """Health check endpoint. Returns status OK as JSON."""
+def liveness_check():
+    """Liveness check endpoint. Returns 200 (OK) if application process is running."""
     return schemas.HealthCheck(status="OK")
+
+
+@app.get(
+    "/health/ready",
+    summary="Readiness Health Check",
+    response_description="Returns 200 (OK) if application is ready to serve traffic",
+    response_model=schemas.HealthCheck,
+)
+def readiness_check():
+    """Readiness check endpoint. Returns 200 (OK) if application can serve traffic."""
+    # Test database connectivity
+    try:
+        with database.engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        return schemas.HealthCheck(status="OK")
+    except Exception as e:
+        # Return 503 Service Unavailable if database is not accessible
+        raise HTTPException(
+            status_code=503, detail=f"Database connection failed: {str(e)}"
+        )

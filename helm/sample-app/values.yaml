@@ -18,7 +18,7 @@ application:
     startupProbe:
       enabled: true
       httpGet:
-        path: /health
+        path: /health/ready
         port: 8000
       initialDelaySeconds: 15
       timeoutSeconds: 5
@@ -28,7 +28,7 @@ application:
     readinessProbe:
       enabled: true
       httpGet:
-        path: /health
+        path: /health/ready
         port: 8000
       initialDelaySeconds: 10
       timeoutSeconds: 3
@@ -38,7 +38,7 @@ application:
     livenessProbe:
       enabled: true
       httpGet:
-        path: /health
+        path: /health/live
         port: 8000
       initialDelaySeconds: 30
       timeoutSeconds: 5
