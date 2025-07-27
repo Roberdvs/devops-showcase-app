@@ -29,9 +29,9 @@ def test_create_and_get_user(database_session):
     assert retrieved_user.date_of_birth == dob
 
 
-def test_health_endpoint(client):
-    """Test health endpoint."""
-    response = client.get("/health")
+def test_health_live_endpoint(client):
+    """Test health/live endpoint."""
+    response = client.get("/health/live")
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "OK"
