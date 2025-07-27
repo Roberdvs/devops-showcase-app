@@ -7,6 +7,12 @@ from sqlmodel import Session
 from sqlalchemy import text
 from datetime import date
 from prometheus_fastapi_instrumentator import Instrumentator
+import sys
+
+# Remove default loguru handler
+logger.remove()
+# Initialize loguru handler for structured logging
+logger.add(sys.stderr, serialize=True)
 
 # Initialize OpenTelemetry tracer
 tracer = telemetry.setup_opentelemetry()
@@ -15,9 +21,16 @@ tracer = telemetry.setup_opentelemetry()
 # FastAPI lifespan to initialize the database and tables on startup
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    # Startup logic
-    database.create_db_and_tables()
+    # Startup logic. Fail fast if database is not available
+    try:
+        logger.info("Attempting to initialize database...")
+        database.create_db_and_tables()
+        logger.info("Database initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize database: {e}")
+        sys.exit(1)
     yield
+
 
 # Initialize FastAPI app
 app = FastAPI(lifespan=lifespan)
