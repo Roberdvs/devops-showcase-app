@@ -7,6 +7,7 @@ from sqlmodel import Session
 from sqlalchemy import text
 from datetime import date
 from prometheus_fastapi_instrumentator import Instrumentator
+from loguru import logger
 import sys
 
 # Remove default loguru handler
