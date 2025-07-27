@@ -38,22 +38,26 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - id: lower-repo
-        name: Repository to lowercase
+      - id: metadata
+        name: Metadata
         run: |
           echo "repository=${GITHUB_REPOSITORY@L}" >> $GITHUB_OUTPUT
+          echo "full_sha=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_OUTPUT
+          full_sha="${{ github.event.workflow_run.head_sha }}"
+          short_sha="sha-${full_sha:0:7}"
+          echo "image_tag=${short_sha}" >> $GITHUB_OUTPUT
 
       - name: Pull CI image
         run: |
           # Pull the image that was built in the CI workflow
-          docker pull ghcr.io/${{ steps.lower-repo.outputs.repository }}:${{ github.event.workflow_run.head_sha }}
-          echo "Successfully pulled CI image: ghcr.io/${{ steps.lower-repo.outputs.repository }}:${{ github.event.workflow_run.head_sha }}"
+          docker pull ghcr.io/${{ steps.metadata.outputs.repository }}:${{ steps.metadata.outputs.image_tag }}
+          echo "Successfully pulled CI image: ghcr.io/${{ steps.metadata.outputs.repository }}:${{ steps.metadata.outputs.image_tag }}"
 
       - name: Deploy to minikube
         run: |
           make helm-deps
           # Install with the PR-specific image tag
-          make helm-install IMAGE_TAG=${{ github.event.workflow_run.head_sha }}
+          make helm-install IMAGE_TAG=${{ steps.metadata.outputs.image_tag }}
 
       - name: Wait for pods to be ready
         run: |
