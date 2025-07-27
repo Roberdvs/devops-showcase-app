@@ -8,6 +8,7 @@ This project demonstrates a modern, production-ready backend application using t
 - **PostgreSQL**: Relational database backend
 - **[SQLModel](https://sqlmodel.tiangolo.com/)**: Simplifies SQL database operations. Combines [SQLAlchemy](https://www.sqlalchemy.org/) and [Pydantic](https://docs.pydantic.dev)
 - **[Twelve-Factor App](https://12factor.net/)** principles for building modern, scalable applications
+- **[Loguru](https://github.com/Delgan/loguru)**: Library for structured JSON logging
 - **Tracing**: Automatic tracing instrumentation using [OpenTelemetry](https://opentelemetry.io/docs/languages/python/) libraries
 - **Prometheus Metrics**: Application metrics exposed on `/metrics` endpoint
 - **Docker**: Containerized application and database, supporting multi-platform builds
@@ -44,7 +45,8 @@ Makefile                # Common dev/test/build commands
 2. Run `make dev` to start the app and DB with Docker Compose with hot reload enabled for faster development
 3. Access the application:
    - **API Documentation**: [http://localhost:8000/docs](http://localhost:8000/docs) or [http://localhost:8000/redoc](http://localhost:8000/redoc)
-   - **Health Check**: [http://localhost:8000/health](http://localhost:8000/health)
+   - **Liveness Endpoint**: [http://localhost:8000/health/live](http://localhost:8000/health/live)
+   - **Readiness Endpoint**: [http://localhost:8000/health/ready](http://localhost:8000/health/ready)
    - **Metrics**: [http://localhost:8000/metrics](http://localhost:8000/metrics)
 
 ### Running Unit Tests
@@ -113,9 +115,9 @@ ENABLE_METRICS=true / false
 
 ### **Health Monitoring**
 
-- **Health Endpoint**: `GET /health` for application health checks
-- **Readiness Probes**: Kubernetes-ready health check responses
-- **Graceful Shutdown**: Proper application lifecycle management
+- **Liveness Endpoint**: `GET /health/live` for basic application health checks.
+- **Readiness Endpoint**: `GET /health/ready` for Kubernetes-ready health check responses.
+- **Graceful Shutdown**: Proper application lifecycle management.
 
 ## System Architecture Diagram
 
