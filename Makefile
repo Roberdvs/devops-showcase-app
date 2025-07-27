@@ -15,10 +15,10 @@ helm-deps:
 	cd helm/sample-app && helm dependency update
 
 helm-install:
-	cd helm/sample-app && helm install sample-app . --namespace sample-app --create-namespace $(if $(IMAGE_TAG),--set application.deployment.image.tag=$(IMAGE_TAG))
+	cd helm/sample-app && helm install sample-app . --namespace sample-app --create-namespace $(HELM_ARGS)
 
 helm-upgrade:
-	cd helm/sample-app && helm upgrade sample-app . --namespace sample-app $(if $(IMAGE_TAG),--set application.deployment.image.tag=$(IMAGE_TAG))
+	cd helm/sample-app && helm upgrade sample-app . --namespace sample-app $(HELM_ARGS)
 
 helm-uninstall:
 	cd helm/sample-app && helm uninstall sample-app --namespace sample-app

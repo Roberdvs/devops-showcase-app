@@ -51,7 +51,7 @@ jobs:
         run: |
           make helm-deps
           # Install with the PR-specific image tag
-          make helm-install IMAGE_TAG=${{ steps.metadata.outputs.image_tag }}
+          make helm-install HELM_ARGS="--set application.deployment.image.tag=${{ steps.metadata.outputs.image_tag }}"
 
       - name: Wait for pods to be ready
         run: |
