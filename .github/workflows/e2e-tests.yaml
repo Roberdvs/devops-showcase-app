@@ -14,7 +14,7 @@ permissions:
 jobs:
   e2e-test:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    name: Deploy to Minikube
+    name: End-to-End Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,12 +24,6 @@ jobs:
         uses: medyagh/setup-minikube@v0.0.20
 
       - uses: azure/setup-helm@v4.3.0
-
-      - name: Add Helm repositories
-        run: |
-          helm repo add stakater https://stakater.github.io/stakater-charts
-          helm repo add bitnami https://charts.bitnami.com/bitnami
-          helm repo update
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -51,7 +45,7 @@ jobs:
         run: |
           # Pull the image that was built in the CI workflow
           docker pull ghcr.io/${{ steps.metadata.outputs.repository }}:${{ steps.metadata.outputs.image_tag }}
-          echo "Successfully pulled CI image: ghcr.io/${{ steps.metadata.outputs.repository }}:${{ steps.metadata.outputs.image_tag }}"
+          minikube image load ghcr.io/${{ steps.metadata.outputs.repository }}:${{ steps.metadata.outputs.image_tag }}
 
       - name: Deploy to minikube
         run: |
