@@ -70,7 +70,8 @@ jobs:
 
           # Test health endpoint
           echo "Testing health endpoint..."
-          curl -f "$SERVICE_URL/health" || exit 1
+          curl -f "$SERVICE_URL/health/live" || exit 1
+          curl -f "$SERVICE_URL/health/ready" || exit 1
 
           # Test API documentation
           echo "Testing API docs..."
