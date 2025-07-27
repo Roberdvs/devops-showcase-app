@@ -6,21 +6,45 @@ application:
     env:
       DATABASE_URL:
         value: postgresql://postgres:postgres@sample-app-postgresql:5432/example
+    initContainers:
+      - name: wait-for-database
+        image: postgres:17-alpine
+        command: ['sh', '-c', 'until pg_isready -h sample-app-postgresql -p 5432 -U postgres; do echo waiting for database; sleep 2; done;']
     ports:
       - containerPort: 8000
         name: http
         protocol: TCP
 
-    livenessProbe:
+    startupProbe:
       enabled: true
       httpGet:
         path: /health
         port: 8000
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+      failureThreshold: 3
+      successThreshold: 1
+      periodSeconds: 10
     readinessProbe:
       enabled: true
       httpGet:
         path: /health
         port: 8000
+      initialDelaySeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 3
+      successThreshold: 1
+      periodSeconds: 5
+    livenessProbe:
+      enabled: true
+      httpGet:
+        path: /health
+        port: 8000
+      initialDelaySeconds: 30
+      timeoutSeconds: 5
+      failureThreshold: 3
+      successThreshold: 1
+      periodSeconds: 10
 
   service:
     type: NodePort
