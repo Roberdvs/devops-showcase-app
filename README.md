@@ -5,7 +5,7 @@
 This project demonstrates a modern, production-ready backend application using the following technologies:
 
 - **[FastAPI](https://fastapi.tiangolo.com/)**: Modern, fast web framework for building APIs
-- **PostgreSQL**: Relational database backend
+- **[PostgreSQL](https://www.postgresql.org/)**: Relational database backend
 - **[SQLModel](https://sqlmodel.tiangolo.com/)**: Simplifies SQL database operations. Combines [SQLAlchemy](https://www.sqlalchemy.org/) and [Pydantic](https://docs.pydantic.dev)
 - **[Twelve-Factor App](https://12factor.net/)** principles for building modern, scalable applications
 - **[Loguru](https://github.com/Delgan/loguru)**: Library for structured JSON logging
@@ -13,18 +13,11 @@ This project demonstrates a modern, production-ready backend application using t
 - **Prometheus Metrics**: Application metrics exposed on `/metrics` endpoint
 - **Docker**: Containerized application and database, supporting multi-platform builds
 - **Helm**: Helm charts to package and deploy Kubernetes manifests
-- **GitHub Actions**: CI/CD pipelines
+- **GitHub Actions**: CI/CD pipelines to automate multiple tasks
 - **Comprehensive Testing**:
   - Unit testing with coverage reporting
   - Integration testing with Testcontainers
-  - End-to-end testing with an ephemeral Kubernetes cluster in GitHub Actions
-
-## Prerequisites
-
-- [Docker](https://www.docker.com/get-started)
-- [Python 3.13+](https://www.python.org/downloads/)
-- [uv](https://github.com/astral-sh/uv) (for Python dependency management)
-- [Helm](https://helm.sh/) (for Kubernetes deployment)
+  - End-to-end testing with an ephemeral [minikube](https://minikube.sigs.k8s.io/docs/) cluster in GitHub Actions
 
 ## Project Structure
 
@@ -41,8 +34,17 @@ Makefile                # Common dev/test/build commands
 
 ## Local Development
 
+### Prerequisites
+
+- [Docker](https://www.docker.com/get-started)
+- [Python 3.13+](https://www.python.org/downloads/)
+- [uv](https://github.com/astral-sh/uv) (for Python dependency management)
+- [Helm](https://helm.sh/) (for Kubernetes deployment)
+
+### Running the application
+
 1. Clone the repo
-2. Run `make dev` to start the app and DB with Docker Compose with hot reload enabled for faster development
+2. Run `make dev` to start the app+DB using Docker Compose with hot reload enabled for faster development
 3. Access the application:
    - **API Documentation**: [http://localhost:8000/docs](http://localhost:8000/docs) or [http://localhost:8000/redoc](http://localhost:8000/redoc)
    - **Liveness Endpoint**: [http://localhost:8000/health/live](http://localhost:8000/health/live)
@@ -51,7 +53,7 @@ Makefile                # Common dev/test/build commands
 
 ### Running Unit Tests
 
-Run `make test`. Uses `uv`, `coverage` and `pytest` to run the unit tests and generate a coverage report.
+Run `make test`. It will use `uv`, `coverage` and `pytest` to run the unit tests and generate a coverage report.
 
 Unit tests are located in `app/tests/unit/` and test individual components in isolation.
 
@@ -59,18 +61,7 @@ Unit tests are located in `app/tests/unit/` and test individual components in is
 
 The project makes use of [Testcontainers](https://testcontainers.com/) to spin up a containerized PostgreSQL for testing.
 
-#### **Local Testing**
-
-Run `make integration-tests` to execute the integration tests locally.
-
-Integration tests are located in `app/tests/integration/` and test the complete application stack.
-
-### Common Makefile Commands
-
-- `make dev`           – Start app and db locally with hot reload
-- `make test`          – Run tests with coverage
-- `make build`         – Build Docker image
-- `make helm-install`  – Install Helm chart to local cluster
+Run `make integration-tests` to execute the integration tests.
 
 ## Database Configuration
 
@@ -94,29 +85,49 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5432/example
 
 ## Deployment with Helm
 
-The project contains a Helm chart for deploying the application manifests to a Kubernetes cluster. It relies on a generic [`stakater/application`](https://github.com/stakater/application) chart for deploying the application and the [`bitnami/postgresql`](https://github.com/bitnami/charts/tree/main/bitnami/postgresql) chart for deploying the database. Alternatively, an external database like AWS RDS can be used, pointing to it using the individual database environment variables or `DATABASE_URL` on the application.
+The project contains a Helm chart for deploying the application manifests to a Kubernetes cluster. It uses as dependencies:
+
+- [`stakater/application`](https://github.com/stakater/application) chart for deploying the application
+- [`bitnami/postgresql`](https://github.com/bitnami/charts/tree/main/bitnami/postgresql) chart for deploying the database
+
+Alternatively, the postgresql chart can be disabled and an external database like AWS RDS can be used, pointing to it using the individual database environment variables or `DATABASE_URL` on the application.
 
 ### Values Files
 
 - `values.yaml` - Default values for development
-- `values-prod.yaml` - Production-ready values
+- `values-prod-example.yaml` - Example of production-ready values
 
 ### Deployment
 
-1. Build and push your Docker image to a registry (update `values.yaml` with the image repo/tag)
-2. Update Helm dependencies:
+1. Install the chart:
 
    ```sh
    make helm-deps
-   ```
-
-3. Install to your cluster:
-
-   ```sh
    make helm-install
    ```
 
 Adjust the `helm/devops-showcase-app/values.yaml` accordingly with the different configuration options (ingress, DB, env, etc).
+
+## Helm Chart Repository
+
+The Helm chart is also published to GitHub Pages using [chart-releaser](https://github.com/helm/chart-releaser) when changes are pushed to the main branch.
+
+It can be installed like any other public Helm chart:
+
+1. Add the chart repository:
+
+   ```sh
+   helm repo add devops-showcase-app https://roberdvs.github.io/devops-showcase-app
+   helm repo update
+   ```
+
+2. Install the chart:
+
+   ```sh
+   helm install devops-showcase-app devops-showcase-app/devops-showcase-app \
+     --namespace devops-showcase-app \
+     --create-namespace
+   ```
 
 ## Observability
 
@@ -222,12 +233,12 @@ The following architecture components can be used for a production-ready deploym
 
 ### **Deployment Tools**
 
-- **Helm**: Package manager for K8s applications' deployments
-- **GitHub Actions**: Automations for CI/CD
+- **GitOps**: [ArgoCD](https://argo-cd.readthedocs.io/en/stable/) can be used to deploy the application to a Kubernetes cluster.
+- **Infrastructure as Code**: [Terraform](https://www.terraform.io/) can be used to create the necessary infrastructure for the application (VPC, EKS, RDS, etc.).
 
 ## DevOps Flow
 
 1. **Code Changes**: GitHub Actions triggers tests and build
 2. **Docker Build**: Image pushed to Container Registry
-3. **Deployment**: Deploys application to Kubernetes cluster using Helm
+3. **Deployment**: Deploys application to Kubernetes cluster using ArgoCD
 4. **Observability**: Prometheus-compatible metrics. Logs collected by a monitoring agent. Traces can be sent to a monitoring backend like [Jaeger](https://www.jaegertracing.io/) or [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/).
