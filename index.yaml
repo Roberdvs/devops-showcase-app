@@ -1,0 +1,21 @@
+apiVersion: v1
+entries:
+  devops-showcase-app:
+  - apiVersion: v2
+    created: "2025-07-28T09:49:12.401798119Z"
+    dependencies:
+    - name: application
+      repository: https://stakater.github.io/stakater-charts
+      version: 6.5.0
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 16.7.21
+    description: A Helm chart for deploying the DevOps Showcase App
+    digest: 81baa7920900ce6dd7800d9f798bce561dbb01ead8f8ee3f78454fa6d737f83e
+    name: devops-showcase-app
+    type: application
+    urls:
+    - https://github.com/Roberdvs/devops-showcase-app/releases/download/devops-showcase-app-0.3.0/devops-showcase-app-0.3.0.tgz
+    version: 0.3.0
+generated: "2025-07-28T09:49:12.401809952Z"
