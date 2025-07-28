@@ -2,7 +2,11 @@ services:
   server:
     build: .
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/example
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=example
       # Enable Prometheus metrics
       - ENABLE_METRICS=true
       - OTEL_TRACES_EXPORTER=otlp

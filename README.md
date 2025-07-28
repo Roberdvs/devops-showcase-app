@@ -72,9 +72,38 @@ Integration tests are located in `app/tests/integration/` and test the complete 
 - `make build`         – Build Docker image
 - `make helm-install`  – Install Helm chart to local cluster
 
+## Database Configuration
+
+Following the 12-factor app principles, the application gets its configuration from the environment. It supports two ways to configure the database connection:
+
+Set individual database components as environment variables:
+
+```bash
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=example
+```
+
+Or set a single `DATABASE_URL` environment variable (takes precedence over individual components):
+
+```bash
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/example
+```
+
+**Note**: If both `DATABASE_URL` and individual components are set, `DATABASE_URL` takes precedence.
+
 ## Deployment with Helm
 
-The project contains a Helm chart for deploying the application manifests to a Kubernetes cluster. It relies on a generic [`stakater/application`](https://github.com/stakater/application) chart for deploying the application and the [`bitnami/postgresql`](https://github.com/bitnami/charts/tree/main/bitnami/postgresql) chart for deploying the database. Alternatively, an external database like AWS RDS can be used, pointing to it using the `DATABASE_URL` environment variable on the application.
+The project contains a Helm chart for deploying the application manifests to a Kubernetes cluster. It relies on a generic [`stakater/application`](https://github.com/stakater/application) chart for deploying the application and the [`bitnami/postgresql`](https://github.com/bitnami/charts/tree/main/bitnami/postgresql) chart for deploying the database. Alternatively, an external database like AWS RDS can be used, pointing to it using the individual database environment variables or `DATABASE_URL` on the application.
+
+### Values Files
+
+- `values.yaml` - Default values for development
+- `values-prod.yaml` - Production-ready values
+
+### Deployment
 
 1. Build and push your Docker image to a registry (update `values.yaml` with the image repo/tag)
 2. Update Helm dependencies:
