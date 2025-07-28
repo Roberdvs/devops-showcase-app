@@ -95,7 +95,7 @@ Alternatively, the postgresql chart can be disabled and an external database lik
 ### Values Files
 
 - `values.yaml` - Default values for development
-- `values-prod-example.yaml` - Example of production-ready values
+- `values-prod-example.yaml` - Example of production-ready values running multiple replicas across Availability Zones, an external database, ingress, pod disruption budget, etc.
 
 ### Deployment
 
