@@ -1,4 +1,4 @@
-# Sample app
+# DevOps Showcase App
 
 ## Project Overview
 
