@@ -1,0 +1,52 @@
+# Production values. Overrides from values.yaml
+# Exemplifies how to use an ExternalSecret for the database URL
+application:
+  deployment:
+    replicas: 2
+
+    env: null
+    envFrom:
+      database-connection:
+        type: secret
+        nameSuffix: database-connection
+        optional: false
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "64Mi"
+        limits:
+          memory: "64Mi"
+    initContainers:
+      - name: wait-for-database
+        image: postgres:17-alpine
+        env:
+          - name: DB_HOST
+            value: REPLACE_ME # Replace with the database host
+        command: ['sh', '-c', 'until pg_isready -h $DB_HOST -p 5432 -U dummy; do echo waiting for database; sleep 2; done;']
+
+  service:
+    type: ClusterIP
+
+  ingress:
+    enabled: true
+    hosts:
+      - host: sample-app.example.com
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+
+  # Create an external secret to retrieve the database URL from AWS Secrets Manager
+  # See https://external-secrets.io/latest/provider/aws-secrets-manager/ for other supported providers
+  externalSecret:
+    enabled: true
+    secretStore:
+      kind: ClusterSecretStore
+      name: aws-secrets
+    files:
+      database-connection:
+        dataFrom:
+          key: production/database-connection
+
+postgresql:
+  # Disable the in-cluster deployment of the database
+  enabled: false
