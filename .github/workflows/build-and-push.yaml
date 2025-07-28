@@ -58,3 +58,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
+
+      - name: Run Trivy Vulnerability Scan
+        uses: aquasecurity/trivy-action@0.32.0
+        with:
+          image-ref: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
