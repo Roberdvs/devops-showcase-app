@@ -10,7 +10,7 @@ services:
       # Enable Prometheus metrics
       - ENABLE_METRICS=true
       - OTEL_TRACES_EXPORTER=otlp
-      - OTEL_SERVICE_NAME=sample-app
+      - OTEL_SERVICE_NAME=devops-showcase-app
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
     ports:
       - 8000:8000

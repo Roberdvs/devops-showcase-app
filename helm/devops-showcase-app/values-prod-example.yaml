@@ -30,7 +30,7 @@ application:
   ingress:
     enabled: true
     hosts:
-      - host: sample-app.example.com
+      - host: devops-showcase-app.example.com
         paths:
           - path: /
             pathType: ImplementationSpecific

@@ -92,8 +92,6 @@ Or set a single `DATABASE_URL` environment variable (takes precedence over indiv
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/example
 ```
 
-**Note**: If both `DATABASE_URL` and individual components are set, `DATABASE_URL` takes precedence.
-
 ## Deployment with Helm
 
 The project contains a Helm chart for deploying the application manifests to a Kubernetes cluster. It relies on a generic [`stakater/application`](https://github.com/stakater/application) chart for deploying the application and the [`bitnami/postgresql`](https://github.com/bitnami/charts/tree/main/bitnami/postgresql) chart for deploying the database. Alternatively, an external database like AWS RDS can be used, pointing to it using the individual database environment variables or `DATABASE_URL` on the application.
@@ -118,7 +116,7 @@ The project contains a Helm chart for deploying the application manifests to a K
    make helm-install
    ```
 
-Adjust the `helm/sample-app/values.yaml` accordingly with the different configuration options (ingress, DB, env, etc).
+Adjust the `helm/devops-showcase-app/values.yaml` accordingly with the different configuration options (ingress, DB, env, etc).
 
 ## Observability
 
@@ -130,7 +128,7 @@ The application uses OpenTelemetry for distributed tracing with the FastAPI rout
 # Enable/disable tracing
 OTEL_TRACES_EXPORTER=otlp / none
 OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://localhost:4317
-OTEL_SERVICE_NAME=sample-app
+OTEL_SERVICE_NAME=devops-showcase-app
 ```
 
 ### **Prometheus Metrics**
@@ -162,7 +160,7 @@ graph TB
         ALB[Load Balancer<br/>HTTPS & Routing]
 
         subgraph K8s["Kubernetes Cluster"]
-            subgraph Namespace["sample-app Namespace"]
+            subgraph Namespace["devops-showcase-app Namespace"]
                 subgraph App["FastAPI Application"]
                     Pod1[📦 App Pod 1]
                     Pod2[📦 App Pod 2]

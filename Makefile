@@ -9,16 +9,16 @@ integration-tests:
 	PYTHONPATH=. uv run pytest app/tests/integration/ -v
 
 build:
-	docker build -t sample-app:local .
+	docker build -t devops-showcase-app:local .
 
 helm-deps:
-	cd helm/sample-app && helm dependency update
+	cd helm/devops-showcase-app && helm dependency update
 
 helm-install:
-	cd helm/sample-app && helm install sample-app . --namespace sample-app --create-namespace $(HELM_ARGS)
+	cd helm/devops-showcase-app && helm install devops-showcase-app . --namespace devops-showcase-app --create-namespace $(HELM_ARGS)
 
 helm-upgrade:
-	cd helm/sample-app && helm upgrade sample-app . --namespace sample-app $(HELM_ARGS)
+	cd helm/devops-showcase-app && helm upgrade devops-showcase-app . --namespace devops-showcase-app $(HELM_ARGS)
 
 helm-uninstall:
-	cd helm/sample-app && helm uninstall sample-app --namespace sample-app
+	cd helm/devops-showcase-app && helm uninstall devops-showcase-app --namespace devops-showcase-app

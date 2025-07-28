@@ -16,6 +16,6 @@ updates:
       interval: "weekly"
 
   - package-ecosystem: "helm"
-    directory: "/helm/sample-app"
+    directory: "/helm/devops-showcase-app"
     schedule:
       interval: "weekly"
