@@ -4,12 +4,23 @@ application:
       repository: ghcr.io/roberdvs/sample-app
       tag: main
     env:
-      DATABASE_URL:
-        value: postgresql://postgres:postgres@sample-app-postgresql:5432/example
+      DB_HOST:
+        value: postgresql
+      DB_PORT:
+        value: "5432"
+      DB_USER:
+        value: postgres
+      DB_PASSWORD:
+        value: postgres
+      DB_NAME:
+        value: example
     initContainers:
       - name: wait-for-database
         image: postgres:17-alpine
-        command: ['sh', '-c', 'until pg_isready -h sample-app-postgresql -p 5432 -U postgres; do echo waiting for database; sleep 2; done;']
+        env:
+          - name: DB_HOST
+            value: postgresql
+        command: ['sh', '-c', 'until pg_isready -h $DB_HOST -p 5432 -U dummy; do echo waiting for database; sleep 2; done;']
     ports:
       - containerPort: 8000
         name: http
@@ -54,18 +65,13 @@ application:
       protocol: TCP
       targetPort: 8000
 
-  ingress:
-    enabled: true
-    hosts:
-      - host: sample-app.local
-        paths:
-          - path: /
-            pathType: Prefix
-
 postgresql:
   # Disable PostgreSQL in-cluster deployment if using an external database like AWS RDS
   enabled: true
-  auth:
-    username: postgres
-    password: postgres
-    database: example
+  global:
+    postgresql:
+      fullnameOverride: postgresql
+      auth:
+        username: postgres
+        password: postgres
+        database: example

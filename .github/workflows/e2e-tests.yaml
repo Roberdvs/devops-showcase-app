@@ -65,9 +65,6 @@ jobs:
           SERVICE_URL=$(minikube service application --url -n sample-app)
           echo "Testing application at: $SERVICE_URL"
 
-          # Wait a bit for the application to be fully ready
-          sleep 30
-
           # Test health endpoint
           echo "Testing health endpoint..."
           curl -f "$SERVICE_URL/health/live" || exit 1
