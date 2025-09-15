@@ -1,9 +1,9 @@
 dependencies:
 - name: application
   repository: https://stakater.github.io/stakater-charts
-  version: 6.5.0
+  version: 6.8.0
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
   version: 16.7.24
-digest: sha256:2338a99fc1a8b4a8fd54b8184d74b9e9ff41b279d20d96b97bf63d6c0a0ab506
-generated: "2025-08-11T17:14:03.444397772Z"
+digest: sha256:42e4847f052cdf48867b640c260a05950a5f9bf2cff282da4ec69a5256cbdcca
+generated: "2025-09-15T15:39:10.080906384Z"
