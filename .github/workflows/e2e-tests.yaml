@@ -23,7 +23,7 @@ jobs:
         id: minikube
         uses: medyagh/setup-minikube@v0.0.20
 
-      - uses: azure/setup-helm@v4.3.0
+      - uses: azure/setup-helm@v4.3.1
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -98,7 +98,7 @@ jobs:
           echo "Cleanup completed!"
 
       - name: Comment PR with test results
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const branchName = "${{ github.event.workflow_run.head_branch }}";
