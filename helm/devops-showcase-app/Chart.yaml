@@ -6,7 +6,7 @@ version: 0.3.0
 
 dependencies:
   - name: application
-    version: 6.8.0
+    version: 6.11.0
     repository: "https://stakater.github.io/stakater-charts"
   - name: postgresql
     condition: postgresql.enabled
