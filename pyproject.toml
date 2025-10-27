@@ -14,6 +14,11 @@ dependencies = [
     "opentelemetry-exporter-otlp==1.35.0",
     "prometheus-fastapi-instrumentator==7.1.0",
     "loguru==0.7.3",
+    "pydantic>=2.12.0",
+    "httptools>=0.7.0",
+    "grpcio>=1.75.1",
+    "uvloop>=0.22.0",
+    "rignore>=0.7.0"
 ]
 
 [dependency-groups]
