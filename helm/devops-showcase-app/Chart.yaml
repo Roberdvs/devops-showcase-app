@@ -10,5 +10,5 @@ dependencies:
     repository: "https://stakater.github.io/stakater-charts"
   - name: postgresql
     condition: postgresql.enabled
-    version: 16.7.24
+    version: 16.7.27
     repository: "https://charts.bitnami.com/bitnami"
