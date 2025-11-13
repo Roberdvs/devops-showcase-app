@@ -68,7 +68,12 @@ application:
 postgresql:
   # Disable PostgreSQL in-cluster deployment if using an external database like AWS RDS
   enabled: true
+  image:
+    repository: bitnamilegacy/postgresql
+    tag: 17.6.0-debian-12-r4
   global:
+    security:
+      allowInsecureImages: true # https://github.com/bitnami/charts/issues/30850#issuecomment-3103069461
     postgresql:
       fullnameOverride: postgresql
       auth:
