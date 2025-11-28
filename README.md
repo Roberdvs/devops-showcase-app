@@ -69,9 +69,23 @@ The project makes use of [Testcontainers](https://testcontainers.com/) to spin u
 
 Run `make integration-tests` to execute the integration tests.
 
+
 ## Database Configuration
 
-Following the 12-factor app principles, the application gets its configuration from the environment. It supports two ways to configure the database connection:
+Following the 12-factor app principles, the application gets its configuration from the environment. You can run the app with either PostgreSQL (default) or embedded SQLite (no external DB required):
+
+
+### Use Embedded SQLite (no external DB)
+
+Set the following environment variable:
+
+```bash
+USE_SQLITE=true
+# By default, this uses an in-memory database (SQLITE_PATH=":memory:").
+# To persist data, set SQLITE_PATH to a file path (e.g. ./app.db).
+```
+
+### Use PostgreSQL (default)
 
 Set individual database components as environment variables:
 
