@@ -1,11 +1,10 @@
 # DevOps Showcase App
 
-![CI](https://github.com/Roberdvs/sample-app/actions/workflows/ci-tests.yaml/badge.svg)
-![E2E](https://github.com/Roberdvs/sample-app/actions/workflows/e2e-tests.yaml/badge.svg)
-![Docker Image](https://img.shields.io/badge/docker-ghcr.io%2Froberdvs%2Fdevops--showcase--app-blue)
-![Helm Chart](https://img.shields.io/badge/helm-devops--showcase--app-blue)
-![Coverage](https://img.shields.io/badge/coverage-unknown-lightgrey)
-![License](https://img.shields.io/github/license/Roberdvs/sample-app)
+[![License](https://img.shields.io/github/license/Roberdvs/sample-app)](https://github.com/Roberdvs/sample-app/blob/main/LICENSE.md)
+[![CI](https://github.com/Roberdvs/sample-app/actions/workflows/ci-tests.yaml/badge.svg)](https://github.com/Roberdvs/sample-app/actions/workflows/ci-tests.yaml)
+[![E2E](https://github.com/Roberdvs/sample-app/actions/workflows/e2e-tests.yaml/badge.svg)](https://github.com/Roberdvs/sample-app/actions/workflows/e2e-tests.yaml)
+[![Docker Image](https://img.shields.io/badge/docker-ghcr.io%2Froberdvs%2Fdevops--showcase--app-blue)](https://github.com/users/Roberdvs/packages/container/package/devops-showcase-app)
+[![Helm Chart](https://img.shields.io/badge/helm-devops--showcase--app-blue)](https://github.com/Roberdvs/devops-showcase-app/tree/main/helm/devops-showcase-app)
 
 ## Project Overview
 
