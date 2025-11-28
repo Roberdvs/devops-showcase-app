@@ -1,5 +1,12 @@
 # DevOps Showcase App
 
+![CI](https://github.com/Roberdvs/sample-app/actions/workflows/ci-tests.yaml/badge.svg)
+![E2E](https://github.com/Roberdvs/sample-app/actions/workflows/e2e-tests.yaml/badge.svg)
+![Docker Image](https://img.shields.io/badge/docker-ghcr.io%2Froberdvs%2Fdevops--showcase--app-blue)
+![Helm Chart](https://img.shields.io/badge/helm-devops--showcase--app-blue)
+![Coverage](https://img.shields.io/badge/coverage-unknown-lightgrey)
+![License](https://img.shields.io/github/license/Roberdvs/sample-app)
+
 ## Project Overview
 
 This project demonstrates a modern, production-ready backend application using the following technologies:
