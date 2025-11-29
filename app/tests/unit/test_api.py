@@ -3,7 +3,7 @@ from sqlmodel import SQLModel, create_engine, Session
 from sqlmodel.pool import StaticPool
 from datetime import date, timedelta
 
-from app.main import app
+from main import app
 from app import database
 
 # Create a new in-memory SQLite engine for testing

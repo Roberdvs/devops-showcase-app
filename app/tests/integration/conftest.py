@@ -7,7 +7,7 @@ import pytest
 from fastapi.testclient import TestClient
 from testcontainers.postgres import PostgresContainer
 from sqlmodel import Session, create_engine, SQLModel
-from app.main import app
+from main import app
 from app.database import get_session
 from app.models import User
 

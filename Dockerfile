@@ -34,7 +34,7 @@ USER 1000
 
 # Run the FastAPI application
 # Uses `--reload` to enable hot-reloading when the `docker compose watch` file sync occurs
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD curl --fail http://localhost:8000/health || exit 1
