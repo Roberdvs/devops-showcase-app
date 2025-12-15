@@ -21,7 +21,7 @@ jobs:
 
       - name: Start minikube
         id: minikube
-        uses: medyagh/setup-minikube@v0.0.20
+        uses: medyagh/setup-minikube@v0.0.21
 
       - uses: azure/setup-helm@v4.3.1
 
