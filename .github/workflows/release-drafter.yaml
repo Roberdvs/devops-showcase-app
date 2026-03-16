@@ -10,15 +10,21 @@ on:
 
 jobs:
   update_release_draft:
+    if: github.event_name == 'push'
     permissions:
-      # write permission is required to create a github release
       contents: write
-      # write permission is required for autolabeler
+      pull-requests: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: release-drafter/release-drafter@v7
+        with:
+          commitish: main
+
+  autolabel:
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: release-drafter/release-drafter@v6
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          commitish: main
+      - uses: release-drafter/release-drafter/autolabeler@v7
