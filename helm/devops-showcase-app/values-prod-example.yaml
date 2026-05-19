@@ -18,7 +18,7 @@ application:
         limits:
           memory: "64Mi"
     initContainers:
-      - name: wait-for-database
+      wait-for-database:
         image: postgres:17-alpine
         env:
           - name: DB_HOST
