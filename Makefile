@@ -22,3 +22,6 @@ helm-upgrade:
 
 helm-uninstall:
 	cd helm/devops-showcase-app && helm uninstall devops-showcase-app --namespace devops-showcase-app
+
+e2e-test:
+	./scripts/e2e-test.sh

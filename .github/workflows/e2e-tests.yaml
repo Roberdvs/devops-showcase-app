@@ -53,42 +53,8 @@ jobs:
           # Install with the PR-specific image tag
           make helm-install HELM_ARGS="--set application.deployment.image.tag=${{ steps.metadata.outputs.image_tag }}"
 
-      - name: Wait for pods to be ready
-        run: |
-          echo "Waiting for application pod to be ready..."
-          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=devops-showcase-app -n devops-showcase-app --timeout=300s
-          echo "Application is ready"
-
-      - name: Test application endpoints
-        run: |
-          # Get the service URL. Named after the Helm release due to stakater/application v8 naming.
-          SERVICE_URL=$(minikube service devops-showcase-app --url -n devops-showcase-app)
-          echo "Testing application at: $SERVICE_URL"
-
-          # Test health endpoint
-          echo "Testing health endpoint..."
-          curl -f "$SERVICE_URL/health/live" || exit 1
-          curl -f "$SERVICE_URL/health/ready" || exit 1
-
-          # Test API documentation
-          echo "Testing API docs..."
-          curl -f "$SERVICE_URL/docs" || exit 1
-
-          # Test metrics endpoint
-          echo "Testing metrics endpoint..."
-          curl -f "$SERVICE_URL/metrics" || exit 1
-
-          # Test hello endpoint (create user)
-          echo "Testing hello endpoint (create user)..."
-          curl -f -X PUT "$SERVICE_URL/hello/testuser" \
-            -H "Content-Type: application/json" \
-            -d '{"dateOfBirth": "1990-01-15"}' || exit 1
-
-          # Test hello endpoint (get user)
-          echo "Testing hello endpoint (get user)..."
-          curl -f "$SERVICE_URL/hello/testuser" || exit 1
-
-          echo "All tests passed! 🎉"
+      - name: Run e2e tests
+        run: make e2e-test
 
       - name: Cleanup
         if: always()
