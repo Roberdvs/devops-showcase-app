@@ -15,7 +15,7 @@ dependencies = [
     "prometheus-fastapi-instrumentator==7.1.0",
     "loguru==0.7.3",
     "pydantic>=2.13.4",
-    "httptools>=0.7.0",
+    "httptools>=0.8.0",
     "grpcio>=1.81.0",
     "uvloop>=0.22.0",
     "rignore>=0.7.6"
