@@ -42,13 +42,15 @@ application:
   service:
     type: ClusterIP
 
-  ingress:
+  # Expose the application via the Gateway API (HTTPRoute)
+  httpRoute:
     enabled: true
-    hosts:
-      - host: devops-showcase-app.example.com
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
+    # Reference the Gateway this route attaches to
+    parentRefs:
+      - name: REPLACE_ME # Replace with the Gateway name
+        # namespace: REPLACE_ME # Uncomment if the Gateway lives in another namespace
+    hostnames:
+      - devops-showcase-app.example.com
 
   # Create an external secret to retrieve the database URL from AWS Secrets Manager
   # See https://external-secrets.io/latest/provider/aws-secrets-manager/ for other supported providers

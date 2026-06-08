@@ -46,7 +46,7 @@
 ## Kubernetes & Helm
 - **Helm chart:**
   - Located in `helm/devops-showcase-app/`.
-  - `values.yaml`: dev defaults; `values-prod-example.yaml`: production patterns (external DB, ingress, PDB, etc).
+  - `values.yaml`: dev defaults; `values-prod-example.yaml`: production patterns (external DB, HTTPRoute, PDB, etc).
 - **CI/CD:**
   - Chart published to GitHub Pages on main branch push.
   - See `.github/workflows/chart-releaser.yaml`.
