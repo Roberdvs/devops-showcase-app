@@ -65,9 +65,11 @@ jobs:
 
       - name: Comment PR with test results
         uses: actions/github-script@v9
+        env:
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
         with:
           script: |
-            const branchName = "${{ github.event.workflow_run.head_branch }}";
+            const branchName = process.env.HEAD_BRANCH;
 
             // Find PRs associated with this branch
             const { data: pulls } = await github.rest.pulls.list({
