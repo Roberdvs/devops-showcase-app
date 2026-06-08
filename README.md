@@ -115,7 +115,7 @@ Alternatively, the postgresql chart can be disabled and an external database lik
 ### Values Files
 
 - `values.yaml` - Default values for development
-- `values-prod-example.yaml` - Example of production-ready values running multiple replicas across Availability Zones, an external database, ingress, pod disruption budget, etc.
+- `values-prod-example.yaml` - Example of production-ready values running multiple replicas across Availability Zones, an external database, HTTPRoute (Gateway API), pod disruption budget, etc.
 
 ### Deployment
 
@@ -126,7 +126,7 @@ Alternatively, the postgresql chart can be disabled and an external database lik
    make helm-install
    ```
 
-Adjust the `helm/devops-showcase-app/values.yaml` accordingly with the different configuration options (ingress, DB, env, etc).
+Adjust the `helm/devops-showcase-app/values.yaml` accordingly with the different configuration options (HTTPRoute, DB, env, etc).
 
 ## Helm Chart Repository
 
@@ -196,7 +196,7 @@ graph TB
                     Pod1[📦 App Pod 1]
                     Pod2[📦 App Pod 2]
                 end
-                Ingress[Ingress Controller]
+                Gateway[Gateway<br/>Gateway API + HTTPRoute]
                 Service[K8s Service]
             end
         end
@@ -210,8 +210,8 @@ graph TB
         end
     end
 
-    ALB --> Ingress
-    Ingress --> Service
+    ALB --> Gateway
+    Gateway --> Service
     Service --> Pod1
     Service --> Pod2
     Pod1 --> DB
@@ -236,7 +236,7 @@ The following architecture components can be used for a production-ready deploym
 - **VPC**: Isolated network with public/private subnets across multiple AZs
 - **Route 53**: DNS management with records pointing to the Application Load Balancer
 - **Application Load Balancer**: HTTPS termination with SSL certificate and routing to the application pods
-- **Ingress Controller**: [Nginx-ingress controller](https://kubernetes.github.io/ingress-nginx/) for Kubernetes service routing
+- **Gateway API**: [kgateway](https://kgateway.dev/) (or another Gateway API controller) routing traffic to the application via an HTTPRoute
 
 ### **Database**
 
