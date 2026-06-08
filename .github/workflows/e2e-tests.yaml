@@ -19,9 +19,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Start minikube
-        id: minikube
-        uses: medyagh/setup-minikube@v0.0.21
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.14.0
+        with:
+          cluster_name: e2e
 
       - uses: azure/setup-helm@v5.0.0
 
@@ -45,9 +46,9 @@ jobs:
         run: |
           # Pull the image that was built in the CI workflow
           docker pull ghcr.io/${{ steps.metadata.outputs.repository }}:${{ steps.metadata.outputs.image_tag }}
-          minikube image load ghcr.io/${{ steps.metadata.outputs.repository }}:${{ steps.metadata.outputs.image_tag }}
+          kind load docker-image ghcr.io/${{ steps.metadata.outputs.repository }}:${{ steps.metadata.outputs.image_tag }} --name e2e
 
-      - name: Deploy to minikube
+      - name: Deploy to kind cluster
         run: |
           make helm-deps
           # Install with the PR-specific image tag
@@ -59,7 +60,7 @@ jobs:
       - name: Cleanup
         if: always()
         run: |
-          echo "Cleaning up minikube deployment..."
+          echo "Cleaning up kind deployment..."
           make helm-uninstall || true
           echo "Cleanup completed!"
 
@@ -85,7 +86,7 @@ jobs:
               **Status**: ✅ All tests passed!
 
               ### What was tested:
-              - ✅ Minikube cluster deployment
+              - ✅ kind cluster deployment
               - ✅ Helm chart installation with CI image
               - ✅ Application deployment
               - ✅ Health endpoint
@@ -94,7 +95,7 @@ jobs:
               - ✅ API endpoints
 
               ### Test Environment:
-              - **Kubernetes**: Minikube (ephemeral)
+              - **Kubernetes**: kind (ephemeral)
               - **Database**: PostgreSQL (via Bitnami chart)
               - **Application**: FastAPI with OpenTelemetry
               - **Image**: Reused from CI workflow (\`${{ github.event.workflow_run.head_sha }}\`)

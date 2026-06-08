@@ -4,7 +4,7 @@
 - **FastAPI** backend with SQLModel ORM and PostgreSQL database.
 - Containerized with Docker, orchestrated via Docker Compose for local dev and Helm for Kubernetes.
 - Observability: OpenTelemetry tracing, Prometheus metrics, structured logging (Loguru).
-- CI/CD: GitHub Actions for tests, builds, Helm chart publishing, and e2e tests in ephemeral minikube.
+- CI/CD: GitHub Actions for tests, builds, Helm chart publishing, and e2e tests in ephemeral kind.
 
 ## Key Directories & Files
 - `app/`: Main application code (API, models, database, telemetry, health checks)

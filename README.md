@@ -23,7 +23,7 @@ This project demonstrates a modern, production-ready backend application using t
 - **Comprehensive Testing**:
   - Unit testing with coverage reporting
   - Integration testing with Testcontainers
-  - End-to-end testing with an ephemeral [minikube](https://minikube.sigs.k8s.io/docs/) cluster in GitHub Actions
+  - End-to-end testing with an ephemeral [kind](https://kind.sigs.k8s.io/) cluster in GitHub Actions
 
 ## Project Structure
 

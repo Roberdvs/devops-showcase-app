@@ -14,7 +14,21 @@ echo "Application is ready"
 
 echo ""
 echo "=== Resolving service URL ==="
-SERVICE_URL=$(minikube service "$RELEASE_NAME" --url -n "$NAMESPACE")
+# Port-forward the service to a local port. This is cluster-agnostic (works on
+# kind, minikube, etc.) and independent of the service type.
+LOCAL_PORT="${LOCAL_PORT:-18080}"
+kubectl port-forward -n "$NAMESPACE" "service/$RELEASE_NAME" "$LOCAL_PORT:8000" >/dev/null 2>&1 &
+PORT_FORWARD_PID=$!
+trap 'kill "$PORT_FORWARD_PID" 2>/dev/null || true' EXIT
+
+SERVICE_URL="http://localhost:$LOCAL_PORT"
+echo "Waiting for port-forward at $SERVICE_URL ..."
+for _ in $(seq 1 30); do
+  if curl -sf "$SERVICE_URL/health/live" >/dev/null 2>&1; then
+    break
+  fi
+  sleep 1
+done
 echo "Testing application at: $SERVICE_URL"
 
 echo ""
