@@ -18,13 +18,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
       - name: "Set up Python"
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7
 
       - name: Install the project
         run: uv sync --locked --all-extras --dev
@@ -36,7 +36,7 @@ jobs:
           uv run coverage xml
 
       - name: Report Coverage
-        uses: orgoro/coverage@v3.3
+        uses: orgoro/coverage@71cf993a407154ad9d8dd027c88a374b0ed002a9 # v3.3
         with:
             coverageFile: coverage.xml
             token: ${{ secrets.GITHUB_TOKEN }}
