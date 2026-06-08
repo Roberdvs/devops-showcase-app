@@ -30,6 +30,12 @@ jobs:
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v6
+        # For pull_request events GITHUB_SHA is the ephemeral merge commit, so
+        # type=sha would tag sha-<merge>. The e2e workflow derives the tag from
+        # workflow_run.head_sha (the PR head commit), so the tags must match the
+        # PR head SHA — otherwise the pull fails with "manifest unknown".
+        env:
+          DOCKER_METADATA_PR_HEAD_SHA: true
         with:
           images: |
             ghcr.io/${{ github.repository }}
