@@ -3,41 +3,34 @@ tag-template: '$RESOLVED_VERSION'
 
 categories:
   - title: '🔥 Breaking Changes'
-    labels:
-      - 'breaking-change'
+    semver-increment: 'major'
+    when:
+      labels:
+        - 'breaking-change'
   - title: '🎉 New'
-    labels:
-      - 'feature'
-      - 'enhancement'
+    semver-increment: 'minor'
+    when:
+      labels:
+        - 'feature'
+        - 'enhancement'
   - title: '🐛 Fixes'
-    labels:
-      - 'bug'
+    semver-increment: 'patch'
+    when:
+      labels:
+        - 'bug'
   - title: '📦 Dependency Updates'
-    labels:
-      - 'dependencies'
+    semver-increment: 'patch'
+    when:
+      labels:
+        - 'dependencies'
   - title: '🔧 Maintenance'
-    labels:
-      - 'chore'
-      - 'internal'
-      - 'maintenance'
+    semver-increment: 'patch'
+    when:
+      labels:
+        - 'chore'
+        - 'internal'
+        - 'maintenance'
   - title: 'Other Changes'
-    labels: []
-version-resolver:
-  major:
-    labels:
-      - 'breaking-change'
-  minor:
-    labels:
-      - 'feature'
-      - 'enhancement'
-  patch:
-    labels:
-      - 'bug'
-      - 'dependencies'
-      - 'chore'
-      - 'internal'
-      - 'maintenance'
-  default: 'patch'
 
 autolabeler:
   - label: 'breaking-change'
