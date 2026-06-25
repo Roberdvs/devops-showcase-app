@@ -2,7 +2,7 @@ apiVersion: v2
 name: devops-showcase-app
 description: A Helm chart for deploying the DevOps Showcase App
 type: application
-version: 0.3.0
+version: 0.5.0
 
 dependencies:
   - name: application
