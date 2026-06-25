@@ -19,7 +19,7 @@ application:
           memory: "64Mi"
     initContainers:
       wait-for-database:
-        image: postgres:17-alpine
+        image: postgres:18-alpine
         env:
           - name: DB_HOST
             value: REPLACE_ME # Replace with the database host

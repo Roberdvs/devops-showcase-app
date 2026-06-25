@@ -15,7 +15,7 @@ from app.models import User
 @pytest.fixture(scope="session")
 def postgres_container():
     """Start PostgreSQL container for integration tests."""
-    with PostgresContainer("postgres:15") as postgres:
+    with PostgresContainer("postgres:18-alpine") as postgres:
         yield postgres
 
 

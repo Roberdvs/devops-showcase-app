@@ -96,7 +96,7 @@ jobs:
 
               ### Test Environment:
               - **Kubernetes**: kind (ephemeral)
-              - **Database**: PostgreSQL (via Bitnami chart)
+              - **Database**: PostgreSQL (via groundhog2k chart)
               - **Application**: FastAPI with OpenTelemetry
               - **Image**: Reused from CI workflow (\`${{ github.event.workflow_run.head_sha }}\`)
 

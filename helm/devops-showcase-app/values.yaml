@@ -16,7 +16,7 @@ application:
         value: example
     initContainers:
       wait-for-database:
-        image: postgres:17-alpine
+        image: postgres:18-alpine
         env:
           - name: DB_HOST
             value: postgresql
@@ -66,17 +66,16 @@ application:
       targetPort: 8000
 
 postgresql:
-  # Disable PostgreSQL in-cluster deployment if using an external database like AWS RDS
+  # In-cluster PostgreSQL for CI/local only (disable when using e.g. AWS RDS).
+  # Storage is left unset, so the chart uses an ephemeral emptyDir.
   enabled: true
-  image:
-    repository: bitnamilegacy/postgresql
-    tag: 17.6.0-debian-12-r4
-  global:
-    security:
-      allowInsecureImages: true # https://github.com/bitnami/charts/issues/30850#issuecomment-3103069461
-    postgresql:
-      fullnameOverride: postgresql
-      auth:
-        username: postgres
-        password: postgres
-        database: example
+  fullnameOverride: postgresql
+  settings:
+    superuser:
+      value: postgres
+    superuserPassword:
+      value: postgres
+  # Create the app database; the app connects as the superuser.
+  env:
+    - name: POSTGRES_DB
+      value: example

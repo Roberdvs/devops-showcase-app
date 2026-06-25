@@ -108,7 +108,7 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5432/example
 The project contains a Helm chart for deploying the application manifests to a Kubernetes cluster. It uses as dependencies:
 
 - [`stakater/application`](https://github.com/stakater/application) chart for deploying the application
-- [`bitnami/postgresql`](https://github.com/bitnami/charts/tree/main/bitnami/postgresql) chart for deploying the database
+- [`groundhog2k/postgres`](https://github.com/groundhog2k/helm-charts/tree/master/charts/postgres) chart for deploying the database
 
 Alternatively, the postgresql chart can be disabled and an external database like AWS RDS can be used, pointing to it using the individual database environment variables or `DATABASE_URL` on the application.
 

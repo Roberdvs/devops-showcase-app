@@ -2,8 +2,8 @@ dependencies:
 - name: application
   repository: https://stakater.github.io/stakater-charts
   version: 9.0.0
-- name: postgresql
-  repository: https://charts.bitnami.com/bitnami
-  version: 16.7.27
-digest: sha256:ead25e7dc139decdf9fa0858b6a27681d5aef4dc2d0657101be7d6be22a3b22c
-generated: "2026-06-08T09:28:59.300982227Z"
+- name: postgres
+  repository: https://groundhog2k.github.io/helm-charts
+  version: 1.6.4
+digest: sha256:ae7f58344dde001d1e398ae011ef8fb2e54533432fe9ade3b5c9348a1b02dd1d
+generated: "2026-06-25T09:17:36.425563+02:00"

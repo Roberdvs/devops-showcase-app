@@ -34,11 +34,12 @@ services:
         condition: service_healthy
 
   postgres:
-    image: postgres:17-alpine
+    image: postgres:18-alpine
     restart: always
     user: postgres
     volumes:
-      - db-data:/var/lib/postgresql/data
+      # PG18 moved PGDATA to /var/lib/postgresql/18/docker; mount the parent so data persists.
+      - db-data:/var/lib/postgresql
     environment:
       - POSTGRES_DB=example
       - POSTGRES_USER=postgres
