@@ -29,7 +29,7 @@ jobs:
 
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6
         # For pull_request events GITHUB_SHA is the ephemeral merge commit, so
         # type=sha would tag sha-<merge>. The e2e workflow derives the tag from
         # workflow_run.head_sha (the PR head commit), so the tags must match the
