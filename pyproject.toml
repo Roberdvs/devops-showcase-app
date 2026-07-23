@@ -16,7 +16,7 @@ dependencies = [
     "loguru==0.7.3",
     "pydantic>=2.13.4",
     "httptools>=0.8.0",
-    "grpcio>=1.82.1",
+    "grpcio>=1.83.0",
     "uvloop>=0.22.0",
     "rignore>=0.8.0"
 ]
