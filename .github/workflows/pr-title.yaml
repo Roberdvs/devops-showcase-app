@@ -1,0 +1,27 @@
+name: PR Title
+
+# Enforces conventional PR titles (feat/fix/chore/... per the Conventional
+# Commits spec). Release-drafter categorizes changes and resolves the next
+# version from these titles — see .github/release-drafter.yml.
+#
+# pull_request_target (not pull_request) so the check also runs with a valid
+# token on PRs from forks; the action only reads PR metadata and never checks
+# out or executes PR code, so this is safe.
+on:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - reopened
+
+permissions:
+  pull-requests: read
+
+jobs:
+  validate:
+    name: Validate conventional PR title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
