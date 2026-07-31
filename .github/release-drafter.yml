@@ -1,59 +1,75 @@
 name-template: 'v$RESOLVED_VERSION 🚀'
 tag-template: '$RESOLVED_VERSION'
 
+# Unified category pipeline (release-drafter 7.4+). A `when` given as a list
+# is OR — the PR matches the category if any condition object matches;
+# predicates inside one condition object are AND.
+#
+# Categorization matches conventional PR titles directly (enforced by the
+# pr-title workflow); labels remain as manual overrides.
+#
+# `exclusive: true` = first-match-wins: a PR lands only in the first matching
+# category, instead of being rendered in every category it matches.
 categories:
+  # Ordered before New so `feat!:` lands here, not in New.
   - title: '🔥 Breaking Changes'
     semver-increment: 'major'
+    exclusive: true
     when:
-      labels:
-        - 'breaking-change'
+      - labels:
+          - 'breaking-change'
+      - conventional:
+          breaking: true
   - title: '🎉 New'
     semver-increment: 'minor'
+    exclusive: true
     when:
-      labels:
-        - 'feature'
-        - 'enhancement'
-  - title: '🐛 Fixes'
-    semver-increment: 'patch'
-    when:
-      labels:
-        - 'bug'
+      - labels:
+          - 'feature'
+          - 'enhancement'
+      - conventional:
+          type: 'feat'
+  # Ordered before Fixes and Maintenance so Dependabot's `chore(deps): ...`
+  # titles and `dependencies` label (applied by Dependabot itself) win over
+  # the bare `fix`/`chore` type matches below.
   - title: '📦 Dependency Updates'
     semver-increment: 'patch'
+    exclusive: true
     when:
-      labels:
-        - 'dependencies'
+      - labels:
+          - 'dependencies'
+      - conventional:
+          scopes:
+            - 'deps'
+            - 'deps-dev'
+  - title: '🐛 Fixes'
+    semver-increment: 'patch'
+    exclusive: true
+    when:
+      - labels:
+          - 'bug'
+      - conventional:
+          type: 'fix'
   - title: '🔧 Maintenance'
     semver-increment: 'patch'
+    exclusive: true
     when:
-      labels:
-        - 'chore'
-        - 'internal'
-        - 'maintenance'
+      - labels:
+          - 'chore'
+          - 'internal'
+          - 'maintenance'
+      - conventional:
+          types:
+            - 'chore'
+            - 'ci'
+            - 'build'
+            - 'docs'
+            - 'refactor'
+            - 'style'
+            - 'test'
+            - 'perf'
+            - 'revert'
+  # Fallback bucket for changes that match no category above (no `when`)
   - title: 'Other Changes'
-
-autolabeler:
-  - label: 'breaking-change'
-    branch:
-      - '/breaking\/.+/'
-    title:
-      - '(?i)^breaking.*'
-  - label: 'feature'
-    branch:
-      - '/feat\/.+/'
-    title:
-      - '(?i)^feat.*'
-  - label: 'bug'
-    branch:
-      - '/fix\/.+/'
-    title:
-      - '(?i)^fix.*'
-  - label: 'dependencies'
-    branch:
-      - '/dependabot\/.+/'
-      - '/renovate\/.+/'
-  - label: 'chore'
-    branch:
-      - '/chore\/.+/'
 
 template: "$CHANGES"
