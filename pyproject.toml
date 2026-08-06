@@ -8,10 +8,16 @@ dependencies = [
     "fastapi[standard]==0.141.1",
     "sqlmodel==0.0.39",
     "psycopg2-binary==2.9.12",
-    "opentelemetry-api==1.43.0",
-    "opentelemetry-sdk==1.43.0",
-    "opentelemetry-instrumentation-fastapi==0.64b0",
-    "opentelemetry-exporter-otlp==1.43.0",
+    # OpenTelemetry ships two coupled version tracks that must stay in lockstep:
+    # core (api/sdk/exporter) as 1.x, instrumentation as 0.x. Exact pins can't be
+    # bumped individually (each release requires an exact semantic-conventions
+    # match), so these are ranges — the resolver picks the latest consistent set
+    # and a single grouped Dependabot bump moves them together. uv.lock still
+    # pins exact versions for reproducibility.
+    "opentelemetry-api>=1.44.0,<2.0.0",
+    "opentelemetry-sdk>=1.44.0,<2.0.0",
+    "opentelemetry-instrumentation-fastapi>=0.65b0,<1.0.0",
+    "opentelemetry-exporter-otlp>=1.44.0,<2.0.0",
     "prometheus-fastapi-instrumentator==8.1.0",
     "loguru==0.7.3",
     "pydantic>=2.13.4",
