@@ -24,7 +24,7 @@ dependencies = [
     "httptools>=0.8.0",
     "grpcio>=1.83.0",
     "uvloop>=0.22.0",
-    "rignore>=0.8.0"
+    "rignore>=0.8.1"
 ]
 
 [dependency-groups]
