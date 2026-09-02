@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "fastapi[standard]==0.141.1",
-    "sqlmodel==0.0.39",
+    "sqlmodel==0.0.42",
     "psycopg2-binary==2.9.12",
     # OpenTelemetry ships two coupled version tracks that must stay in lockstep:
     # core (api/sdk/exporter) as 1.x, instrumentation as 0.x. Exact pins can't be
