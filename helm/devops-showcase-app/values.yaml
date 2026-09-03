@@ -16,7 +16,7 @@ application:
         value: example
     initContainers:
       wait-for-database:
-        image: postgres:18-alpine
+        image: postgres:1.6.8
         env:
           - name: DB_HOST
             value: postgresql
