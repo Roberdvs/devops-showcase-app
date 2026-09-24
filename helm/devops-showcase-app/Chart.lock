@@ -1,9 +1,9 @@
 dependencies:
 - name: application
   repository: https://stakater.github.io/stakater-charts
-  version: 9.3.1
+  version: 9.3.2
 - name: postgres
   repository: https://groundhog2k.github.io/helm-charts
   version: 1.6.8
-digest: sha256:a6a1387e08c04693221c3d1d4527a4d3c7fa713d04f47c40aa7d582496aea98f
-generated: "2026-09-03T15:43:01.246348814Z"
+digest: sha256:bcc31f64629b41de4254f4885c6b1aa7d0a1a7605eaed5aff76967ddd1aedd2c
+generated: "2026-09-24T15:43:10.19821085Z"
