@@ -6,10 +6,21 @@ RELEASE_NAME="${RELEASE_NAME:-devops-showcase-app}"
 TIMEOUT="${TIMEOUT:-300s}"
 
 echo "=== Waiting for pods to be ready ==="
-kubectl wait --for=condition=ready pod \
+if ! kubectl wait --for=condition=ready pod \
   -l app.kubernetes.io/name="$RELEASE_NAME" \
   -n "$NAMESPACE" \
-  --timeout="$TIMEOUT"
+  --timeout="$TIMEOUT"; then
+  # Surface why the pod is stuck (ImagePullBackOff, failing probes, pending
+  # init containers, ...) instead of leaving only the bare timeout in CI logs.
+  echo ""
+  echo "=== Pods not ready after $TIMEOUT, dumping diagnostics ==="
+  kubectl get pods -n "$NAMESPACE" -o wide || true
+  echo ""
+  kubectl describe pod -l app.kubernetes.io/name="$RELEASE_NAME" -n "$NAMESPACE" || true
+  echo ""
+  kubectl get events -n "$NAMESPACE" --sort-by=.lastTimestamp | tail -n 30 || true
+  exit 1
+fi
 echo "Application is ready"
 
 echo ""
