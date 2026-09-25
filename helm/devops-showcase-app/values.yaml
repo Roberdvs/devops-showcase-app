@@ -16,7 +16,10 @@ application:
         value: example
     initContainers:
       wait-for-database:
-        image: postgres:1.6.8
+        # Registry-qualified on purpose. Dependabot's helm updater treats a bare
+        # "postgres" image as the same dependency as the "postgres" chart above
+        # and rewrites this tag to the chart version (see PR #234). Keep the prefix.
+        image: docker.io/library/postgres:18-alpine
         env:
           - name: DB_HOST
             value: postgresql
