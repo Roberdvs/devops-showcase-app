@@ -1,5 +1,11 @@
 name-template: 'v$RESOLVED_VERSION 🚀'
-tag-template: '$RESOLVED_VERSION'
+# build-and-push.yaml only builds versioned images on `v*.*.*` tags, so the
+# tag must carry the prefix (bare tags like 0.5.1 never produced an image).
+# tag-prefix restricts previous-release resolution to `v*` releases, which
+# keeps chart-releaser's `devops-showcase-app-<version>` releases from being
+# picked as the previous release and skewing the next version.
+tag-template: 'v$RESOLVED_VERSION'
+tag-prefix: 'v'
 
 # Unified category pipeline (release-drafter 7.4+). A `when` given as a list
 # is OR — the PR matches the category if any condition object matches;
@@ -34,6 +40,8 @@ categories:
   # the bare `fix`/`chore` type matches below.
   - title: '📦 Dependency Updates'
     semver-increment: 'patch'
+    # Fold the (long) Dependabot list into a <details> block past ten entries.
+    collapse-after: 10
     exclusive: true
     when:
       - labels:
@@ -72,4 +80,19 @@ categories:
   # Fallback bucket for changes that match no category above (no `when`)
   - title: 'Other Changes'
 
-template: "$CHANGES"
+# Dependabot bumps the same dependency several times between releases;
+# group-changes (release-drafter 7.8+) merges them into one entry spanning
+# the first `from` to the last `to`, listing every PR number. `group_in`
+# keeps bumps in a subdirectory (the Helm chart) separate from root ones.
+# `$NUMBERS` renders `#N` for a single PR, so ungrouped entries are unchanged.
+change-template: '* $TITLE ($NUMBERS) $AUTHORS'
+group-changes:
+  - pattern: '/^(?<group_type>chore\((?:deps|deps-dev)\)): Bump (?<group>.+?) from (?<from>\S+) to (?<to>\S+)(?<group_in> in .+)?$/'
+    title-template: '$GROUP_TYPE: Bump $GROUP from $FIRST_FROM to $LAST_TO$GROUP_IN'
+
+# $RESOLVED_TAG (7.9+) is the full `v`-prefixed tag, so the compare link
+# matches the tags that actually exist.
+template: |
+  $CHANGES
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...$RESOLVED_TAG
