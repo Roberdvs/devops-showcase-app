@@ -55,15 +55,40 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # PRs from forks run with a read-only GITHUB_TOKEN and cannot push to
+      # GHCR, so build a single-platform image into the local Docker daemon
+      # instead. The Dockerfile and the Trivy scan still get exercised; only
+      # the push is skipped, which is why e2e-tests.yaml does not run for
+      # fork PRs.
+      - name: Resolve build mode
+        id: mode
+        env:
+          IS_FORK_PR: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+        run: |
+          if [ "$IS_FORK_PR" = "true" ]; then
+            {
+              echo "push=false"
+              echo "load=true"
+              echo "platforms=linux/amd64"
+            } >> "$GITHUB_OUTPUT"
+          else
+            {
+              echo "push=true"
+              echo "load=false"
+              echo "platforms=linux/amd64,linux/arm64"
+            } >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Build and push
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
         with:
-          platforms: linux/amd64,linux/arm64
+          platforms: ${{ steps.mode.outputs.platforms }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          push: true
+          push: ${{ steps.mode.outputs.push }}
+          load: ${{ steps.mode.outputs.load }}
 
       - name: Run Trivy Vulnerability Scan
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
