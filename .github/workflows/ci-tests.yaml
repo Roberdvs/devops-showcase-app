@@ -8,10 +8,12 @@ on:
     branches:
       - main
 
-
+# pull_request runs from forks only get a read-only GITHUB_TOKEN, so this
+# workflow never writes to the PR. The coverage summary is uploaded as an
+# artifact and posted as a comment by coverage-comment.yaml, which runs on
+# workflow_run in the context of this repository and can comment on any PR.
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   ci-tests:
@@ -33,13 +35,27 @@ jobs:
         run: |
           uv run coverage run -m pytest app/tests/unit/
           uv run coverage report
-          uv run coverage xml
 
-      - name: Report Coverage
-        uses: orgoro/coverage@71cf993a407154ad9d8dd027c88a374b0ed002a9 # v3.3
+      - name: Write coverage summary
+        if: github.event_name == 'pull_request'
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          mkdir -p coverage-comment
+          {
+            echo "## Code Coverage"
+            echo
+            uv run coverage report --format=markdown
+            echo
+            echo "_Unit test coverage for \`${HEAD_SHA}\`_"
+          } > coverage-comment/comment.md
+
+      - name: Upload coverage summary
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-            coverageFile: coverage.xml
-            token: ${{ secrets.GITHUB_TOKEN }}
+          name: coverage-comment
+          path: coverage-comment/comment.md
 
       - name: Run integration tests
         run: make integration-tests
