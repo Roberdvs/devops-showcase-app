@@ -2,6 +2,24 @@ apiVersion: v1
 entries:
   devops-showcase-app:
   - apiVersion: v2
+    created: "2026-10-02T10:08:27.886410648Z"
+    dependencies:
+    - name: application
+      repository: https://stakater.github.io/stakater-charts
+      version: 9.3.2
+    - alias: postgresql
+      condition: postgresql.enabled
+      name: postgres
+      repository: https://groundhog2k.github.io/helm-charts
+      version: 1.6.8
+    description: A Helm chart for deploying the DevOps Showcase App
+    digest: 54bfa42f3eaaeb57737de49d11d4919e7cc214b1dd1ffbbfa357227d85013ec2
+    name: devops-showcase-app
+    type: application
+    urls:
+    - https://github.com/Roberdvs/devops-showcase-app/releases/download/devops-showcase-app-0.5.1/devops-showcase-app-0.5.1.tgz
+    version: 0.5.1
+  - apiVersion: v2
     created: "2026-06-25T09:21:49.208936983Z"
     dependencies:
     - name: application
@@ -36,4 +54,4 @@ entries:
     urls:
     - https://github.com/Roberdvs/devops-showcase-app/releases/download/devops-showcase-app-0.3.0/devops-showcase-app-0.3.0.tgz
     version: 0.3.0
-generated: "2026-06-25T09:21:49.208949451Z"
+generated: "2026-10-02T10:08:27.886424499Z"
