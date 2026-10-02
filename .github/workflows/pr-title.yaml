@@ -1,27 +1,33 @@
 name: PR Title
 
-# Enforces conventional PR titles (feat/fix/chore/... per the Conventional
-# Commits spec). Release-drafter categorizes changes and resolves the next
-# version from these titles — see .github/release-drafter.yml.
+# Validates the PR title against the release-drafter category pipeline in
+# .github/release-drafter.yml, so this check and the release categorization
+# share one source of truth: the title must select a category there
+# (feat/fix/chore/... per the Conventional Commits spec), and a title that
+# only lands in the unconditional "Other Changes" fallback fails. Labels OR
+# with titles in the categories, so a PR carrying a category label
+# (dependencies, bug, enhancement, ...) passes regardless of its title;
+# labeled/unlabeled events re-run the check when such a label changes.
 #
 # pull_request_target (not pull_request) so the check also runs with a valid
-# token on PRs from forks; the action only reads PR metadata and never checks
-# out or executes PR code, so this is safe.
+# token on PRs from forks; the action only reads PR metadata from the event
+# payload and the config from the base branch. It never checks out or
+# executes PR code, so this is safe.
 on:
   pull_request_target:
     types:
       - opened
       - edited
       - reopened
+      - labeled
+      - unlabeled
 
 permissions:
-  pull-requests: read
+  contents: read
 
 jobs:
   validate:
     name: Validate conventional PR title
     runs-on: ubuntu-latest
     steps:
-      - uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: release-drafter/release-drafter/check-pr@72967cdc98ddd3160f1fc3dff619de365e137dd0 # v7.9.0
