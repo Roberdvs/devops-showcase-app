@@ -37,3 +37,6 @@ jobs:
         with:
           charts_dir: helm
           skip_existing: true
+          # Chart releases must not become the repo's "Latest" release; that
+          # badge belongs to the application releases the drafter publishes.
+          mark_as_latest: false
