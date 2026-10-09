@@ -2,7 +2,7 @@ application:
   deployment:
     image:
       repository: ghcr.io/roberdvs/devops-showcase-app
-      tag: 0.5.0
+      tag: 0.5.2
     env:
       DB_HOST:
         value: postgresql
