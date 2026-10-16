@@ -92,18 +92,20 @@ jobs:
           load: ${{ steps.mode.outputs.load }}
 
       # Two Trivy passes over the image that was just built (or, for fork PRs,
-      # loaded into the local daemon). The first records every finding as
-      # SARIF for the repository's code scanning view. The second fails the
-      # job on CRITICAL/HIGH vulnerabilities that already have a fix, so an
-      # image with a known fixable vulnerability never gets a green check.
-      # Unfixed findings are reported but do not block, since nothing can be
-      # done about them until upstream ships a patch.
+      # loaded into the local daemon). The first records every finding that
+      # has a fix available, at any severity, as SARIF for the repository's
+      # code scanning view. The second fails the job on CRITICAL/HIGH findings
+      # that have a fix, so an image with a known fixable vulnerability never
+      # gets a green check. Unfixed findings are left out of both: nothing can
+      # be done about them until upstream ships a patch, and the Debian base
+      # image alone carries a few hundred, which would bury the actionable ones.
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
           format: sarif
           output: trivy-results.sarif
+          ignore-unfixed: true
 
       # Fork PRs run with a read-only token that cannot write to code scanning.
       - name: Upload Trivy results to code scanning
