@@ -11,12 +11,14 @@ application:
         type: secret
         nameSuffix: database-connection
         optional: false
-      resources:
-        requests:
-          cpu: "100m"
-          memory: "64Mi"
-        limits:
-          memory: "64Mi"
+    # The app idles at roughly 90Mi RSS, so a 64Mi limit would OOM-kill it on
+    # startup. These leave headroom for request bursts and the OTel exporter.
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        memory: "256Mi"
     initContainers:
       wait-for-database:
         # Registry-qualified for the same reason as in values.yaml.
