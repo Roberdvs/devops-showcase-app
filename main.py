@@ -1,10 +1,11 @@
-from fastapi import FastAPI
-from contextlib import asynccontextmanager
-from app import api, health
-from app import database, telemetry
-from prometheus_fastapi_instrumentator import Instrumentator
-from loguru import logger
 import sys
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+from loguru import logger
+from prometheus_fastapi_instrumentator import Instrumentator
+
+from app import api, database, health, telemetry
 
 # Remove default loguru handler
 logger.remove()
@@ -23,8 +24,10 @@ async def lifespan(_app: FastAPI):
         logger.info("Attempting to initialize database...")
         database.create_db_and_tables()
         logger.info("Database initialized successfully")
-    except Exception as e:
-        logger.error(f"Failed to initialize database: {e}")
+    except Exception:  # noqa: BLE001
+        # Deliberately broad: startup must fail fast on any error here.
+        # logger.exception records the traceback in the structured log.
+        logger.exception("Failed to initialize database")
         sys.exit(1)
     yield
 
