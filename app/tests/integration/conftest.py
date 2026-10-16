@@ -5,11 +5,12 @@ Uses Testcontainers to spin up a real PostgreSQL instance for testing.
 
 import pytest
 from fastapi.testclient import TestClient
+from sqlmodel import Session, SQLModel, create_engine
 from testcontainers.postgres import PostgresContainer
-from sqlmodel import Session, create_engine, SQLModel
-from main import app
+
 from app.database import get_session
 from app.models import User
+from main import app
 
 
 @pytest.fixture(scope="session")

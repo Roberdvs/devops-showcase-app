@@ -3,6 +3,7 @@ Simple integration tests for critical database and API functionality.
 """
 
 from datetime import date
+
 from app.crud import create_or_update_user, get_user
 
 
@@ -32,6 +33,14 @@ def test_create_and_get_user(database_session):
 def test_health_live_endpoint(client):
     """Test health/live endpoint."""
     response = client.get("/health/live")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "OK"
+
+
+def test_health_ready_endpoint(client):
+    """Test health/ready endpoint against the real database."""
+    response = client.get("/health/ready")
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "OK"

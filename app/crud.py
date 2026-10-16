@@ -1,6 +1,8 @@
-from sqlmodel import Session, select
-from app.models import User
 from datetime import date
+
+from sqlmodel import Session, select
+
+from app.models import User
 
 
 def create_or_update_user(session: Session, username: str, dob: date):

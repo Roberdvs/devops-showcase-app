@@ -1,9 +1,15 @@
-from fastapi import APIRouter, HTTPException, Depends
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import text
 from sqlmodel import Session
-from app import schemas, database
+
+from app import database, schemas
 
 router = APIRouter(prefix="/health")
+
+# Dependency to get a database session
+SessionDep = Annotated[Session, Depends(database.get_session)]
 
 
 @router.get("/live", summary="Liveness Health Check")
@@ -13,14 +19,15 @@ def liveness_check():
 
 
 @router.get("/ready", summary="Readiness Health Check")
-def readiness_check(session: Session = Depends(database.get_session)):
+def readiness_check(session: SessionDep):
     """Readiness check endpoint. Returns 200 (OK) if application can serve traffic."""
     # Test database connectivity
     try:
         session.exec(text("SELECT 1"))
         return schemas.HealthCheck(status="OK")
-    except Exception as e:
+    # A readiness probe must report any failure as not ready, whatever raised it.
+    except Exception as e:  # noqa: BLE001
         # Return 503 Service Unavailable if database is not accessible
         raise HTTPException(
-            status_code=503, detail=f"Database connection failed: {str(e)}"
+            status_code=503, detail=f"Database connection failed: {e!s}"
         )
