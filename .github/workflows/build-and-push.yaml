@@ -81,6 +81,7 @@ jobs:
           fi
 
       - name: Build and push
+        id: build
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
         with:
           platforms: ${{ steps.mode.outputs.platforms }}
@@ -91,18 +92,37 @@ jobs:
           push: ${{ steps.mode.outputs.push }}
           load: ${{ steps.mode.outputs.load }}
 
-      # Two Trivy passes over the image that was just built (or, for fork PRs,
-      # loaded into the local daemon). The first records every finding that
-      # has a fix available, at any severity, as SARIF for the repository's
-      # code scanning view. The second fails the job on CRITICAL/HIGH findings
-      # that have a fix, so an image with a known fixable vulnerability never
-      # gets a green check. Unfixed findings are left out of both: nothing can
-      # be done about them until upstream ships a patch, and the Debian base
-      # image alone carries a few hundred, which would bury the actionable ones.
+      # Scan exactly the image this run produced. The tags above are mutable
+      # (`main`, `pr-123`): an overlapping run for the same ref could replace
+      # them between the push and the scan, and the job would then grade a
+      # different image. The pushed digest cannot change. Fork builds are
+      # never pushed, so their locally loaded tag is the only reference.
+      - name: Resolve image reference to scan
+        id: scan
+        env:
+          PUSHED: ${{ steps.mode.outputs.push }}
+          DIGEST: ${{ steps.build.outputs.digest }}
+          TAG: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+        run: |
+          if [ "$PUSHED" = "true" ]; then
+            echo "ref=ghcr.io/${GITHUB_REPOSITORY@L}@${DIGEST}" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=${TAG}" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Two Trivy passes. The first records every finding that has a fix
+      # available, at any severity, as SARIF for the repository's code
+      # scanning view; it covers the amd64 image, the platform of the runner.
+      # The second fails the job on CRITICAL/HIGH findings that have a fix, on
+      # every published platform, so an image with a known fixable
+      # vulnerability never gets a green check. Unfixed findings are left out
+      # of both: nothing can be done about them until upstream ships a patch,
+      # and the Debian base image alone carries a few hundred, which would
+      # bury the actionable ones.
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          image-ref: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+          image-ref: ${{ steps.scan.outputs.ref }}
           format: sarif
           output: trivy-results.sarif
           ignore-unfixed: true
@@ -115,11 +135,19 @@ jobs:
           sarif_file: trivy-results.sarif
           category: trivy-image
 
+      # The amd64 and arm64 images are separate builds whose packages can
+      # differ, and Trivy only scans the platform matching the runner unless
+      # told otherwise, so the gate runs once per published platform. The
+      # step above installed Trivy on PATH and populated its database cache.
       - name: Fail on fixable CRITICAL/HIGH vulnerabilities
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
-        with:
-          image-ref: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
-          skip-setup-trivy: true
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
-          exit-code: 1
+        env:
+          TRIVY_CACHE_DIR: ${{ github.workspace }}/.cache/trivy
+          PLATFORMS: ${{ steps.mode.outputs.platforms }}
+          IMAGE_REF: ${{ steps.scan.outputs.ref }}
+        run: |
+          IFS=, read -ra platforms <<< "$PLATFORMS"
+          for platform in "${platforms[@]}"; do
+            echo "::group::${platform}"
+            trivy image --platform "$platform" --severity CRITICAL,HIGH --ignore-unfixed --exit-code 1 "$IMAGE_REF"
+            echo "::endgroup::"
+          done
