@@ -1,6 +1,9 @@
 services:
   server:
     build: .
+    # The image runs uvicorn without --reload. Add it here so the `watch`
+    # file sync below hot-reloads the app during development.
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
     environment:
       - DB_HOST=postgres
       - DB_PORT=5432

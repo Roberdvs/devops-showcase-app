@@ -1,5 +1,6 @@
-from sqlmodel import SQLModel, Session, create_engine
 import os
+
+from sqlmodel import Session, SQLModel, create_engine
 
 
 def build_database_url_and_kwargs():
@@ -30,7 +31,7 @@ def build_database_url_and_kwargs():
 
 
 DATABASE_URL, ENGINE_KWARGS = build_database_url_and_kwargs()
-engine = create_engine(DATABASE_URL, echo=True, **ENGINE_KWARGS)
+engine = create_engine(DATABASE_URL, **ENGINE_KWARGS)
 
 
 def get_session():
