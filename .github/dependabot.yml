@@ -4,14 +4,20 @@ version: 2
 # its built-in allowlist or declared here. The two chart repositories live on
 # GitHub Pages, which is never allowlisted by default, so without these entries
 # every index.yaml fetch is refused with 403 and the chart dependencies are
-# silently never checked. Both are public; no credentials are needed.
+# silently never checked. Both repositories are public, but GitHub rejects a
+# helm-registry entry without basic-auth credentials, so these are placeholders:
+# GitHub Pages ignores the Authorization header and serves the index regardless.
 registries:
   stakater-charts:
     type: helm-registry
     url: https://stakater.github.io/stakater-charts
+    username: anonymous
+    password: anonymous
   groundhog2k-charts:
     type: helm-registry
     url: https://groundhog2k.github.io/helm-charts
+    username: anonymous
+    password: anonymous
 
 updates:
   - package-ecosystem: "github-actions"
