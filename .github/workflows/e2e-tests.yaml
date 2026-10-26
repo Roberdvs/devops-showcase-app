@@ -47,10 +47,19 @@ jobs:
           echo "image_tag=${short_sha}" >> $GITHUB_OUTPUT
 
       - name: Pull CI image
+        env:
+          IMAGE: ghcr.io/${{ steps.metadata.outputs.repository }}:${{ steps.metadata.outputs.image_tag }}
         run: |
-          # Pull the image that was built in the CI workflow
-          docker pull ghcr.io/${{ steps.metadata.outputs.repository }}:${{ steps.metadata.outputs.image_tag }}
-          kind load docker-image ghcr.io/${{ steps.metadata.outputs.repository }}:${{ steps.metadata.outputs.image_tag }} --name e2e
+          # Pull the image that was built in the CI workflow. The runner's
+          # Docker (29+) uses the containerd image store, where `docker save`
+          # of a multi-platform image keeps the whole OCI index even though
+          # only the host platform was pulled; `kind load docker-image` then
+          # imports it with --all-platforms and fails on the missing arm64
+          # content. Export just the amd64 platform and load the archive.
+          docker pull --platform linux/amd64 "$IMAGE"
+          docker save --platform linux/amd64 "$IMAGE" -o ci-image.tar
+          kind load image-archive ci-image.tar --name e2e
+          rm -f ci-image.tar
 
       - name: Deploy to kind cluster
         run: |
