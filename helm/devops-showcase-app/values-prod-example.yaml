@@ -21,8 +21,8 @@ application:
         memory: "256Mi"
     initContainers:
       wait-for-database:
-        # Registry-qualified for the same reason as in values.yaml.
-        image: docker.io/library/postgres:18-alpine
+        # Spelled this way for the same reason as in values.yaml.
+        image: library/postgres:18-alpine
         env:
           - name: DB_HOST
             value: REPLACE_ME # Replace with the database host
