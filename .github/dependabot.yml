@@ -1,4 +1,18 @@
 version: 2
+
+# The Dependabot proxy only lets the helm updater reach hosts that are either on
+# its built-in allowlist or declared here. The two chart repositories live on
+# GitHub Pages, which is never allowlisted by default, so without these entries
+# every index.yaml fetch is refused with 403 and the chart dependencies are
+# silently never checked. Both are public; no credentials are needed.
+registries:
+  stakater-charts:
+    type: helm-registry
+    url: https://stakater.github.io/stakater-charts
+  groundhog2k-charts:
+    type: helm-registry
+    url: https://groundhog2k.github.io/helm-charts
+
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -30,6 +44,9 @@ updates:
 
   - package-ecosystem: "helm"
     directory: "/helm/devops-showcase-app"
+    registries:
+      - stakater-charts
+      - groundhog2k-charts
     schedule:
       interval: "weekly"
     commit-message:
